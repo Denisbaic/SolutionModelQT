@@ -10,6 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QPixmap pix("E:/QTProjects/SolutionModelAlexey/ShemeSMO.png");
+     QPixmap pix2("E:/QTProjects/SolutionModelAlexey/Block-sheme SMO.png");
+    ui->label_18->setPixmap(pix);
+    ui->label_19->setPixmap(pix2);
 }
 
 MainWindow::~MainWindow()
@@ -242,7 +246,7 @@ void MainWindow::on_pushButton_clicked()
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();
 
-        while (time_manager.ReqNeed>time_manager.ReqAdded || !time_manager.TimeHandle.empty())
+        while (!time_manager.TimeHandle.empty())
         {
             Event event_=time_manager.MoveTime();
             if(event_.event_destination==EventDestination::NewReqest)
@@ -290,6 +294,7 @@ void MainWindow::on_pushButton_clicked()
 
         DrawGraphicExpDensityAdmission(&time_manager);
         DrawGraphicExpDensityService(&time_manager);
+
         ShowProcessedReqTable();
         ShowFailedReqTable(&time_manager);
     }

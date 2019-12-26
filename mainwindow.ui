@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1088</width>
-    <height>708</height>
+    <width>1245</width>
+    <height>732</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,12 +19,12 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1051</width>
-      <height>581</height>
+      <width>1221</width>
+      <height>691</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -643,12 +643,12 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1041</width>
-        <height>561</height>
+        <width>1211</width>
+        <height>661</height>
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_8">
        <attribute name="title">
@@ -712,7 +712,7 @@ p, li { white-space: pre-wrap; }
          </rect>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_14">
          <attribute name="title">
@@ -808,6 +808,48 @@ p, li { white-space: pre-wrap; }
       </widget>
      </widget>
     </widget>
+    <widget class="QWidget" name="tab_16">
+     <attribute name="title">
+      <string>Схема СМО</string>
+     </attribute>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>60</y>
+        <width>611</width>
+        <height>401</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>ShemeSMO.png</pixmap>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_17">
+     <attribute name="title">
+      <string>Блок-схемы алгоритма</string>
+     </attribute>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>1161</width>
+        <height>661</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Блок-схема СМО.png</pixmap>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -815,7 +857,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1088</width>
+     <width>1245</width>
      <height>20</height>
     </rect>
    </property>
