@@ -21,12 +21,15 @@ public:
 
      void DrawGraphicNs(TimeManager* time_manager);
      void DrawGraphicNq(TimeManager* time_manager);
-
-     void DrawGraphicReqPerFix(TimeManager* time_manager);
+     void DrawGraphicReqInDeqPerFix(TimeManager* time_manager);
+     void DrawGraphicReqInSystemPerFix(TimeManager* time_manager);
      void DrawGraphicPPerFix(TimeManager* time_manager);
+
      void DrawGraphicExpAdmission(TimeManager* time_manager);
      void DrawGraphicExpService(TimeManager* time_manager);
 
+     void DrawGraphicExpDensityService(TimeManager* time_manager);
+     void DrawGraphicExpDensityAdmission(TimeManager* time_manager);
 private slots:
     void on_pushButton_clicked();
 

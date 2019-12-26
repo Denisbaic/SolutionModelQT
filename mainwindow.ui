@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
-    <height>705</height>
+    <width>1088</width>
+    <height>708</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -648,7 +648,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_8">
        <attribute name="title">
@@ -664,7 +664,7 @@ p, li { white-space: pre-wrap; }
          </rect>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_9">
          <attribute name="title">
@@ -686,6 +686,54 @@ p, li { white-space: pre-wrap; }
           <string>График времени поступления</string>
          </attribute>
          <widget class="QCustomPlot" name="GraphicExpAdmission" native="true">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1021</width>
+            <height>491</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_13">
+       <attribute name="title">
+        <string>Графики плотности функции распределения</string>
+       </attribute>
+       <widget class="QTabWidget" name="tabWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1031</width>
+          <height>531</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_14">
+         <attribute name="title">
+          <string>График  времени обработки</string>
+         </attribute>
+         <widget class="QCustomPlot" name="GraphicExpDensityService" native="true">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1021</width>
+            <height>481</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_15">
+         <attribute name="title">
+          <string>График времени поступления</string>
+         </attribute>
+         <widget class="QCustomPlot" name="GraphicExpDensityAdmission" native="true">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -767,7 +815,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1068</width>
+     <width>1088</width>
      <height>20</height>
     </rect>
    </property>

@@ -263,13 +263,14 @@ void TimeManager::CheckReqContainer()
 
 Event TimeManager::MoveTime()
 {
-
     Time.push_back(CurrentTime);
     ReqCountPerFix.push_back(GetReqCountInDeq());
-    PPerFix.push_back(GetSystemUtilizationP());
+    ReqCountInSystemPerFix.push_back(GetReqCountInSystem());
+
     NsPerFix.push_back(GetTimeAverageNumberOfRequirementsInTheSystemNs());
     NqPerFix.push_back(GetTimeAverageNumberOfRequestsInTheQueueNq());
 
+    PPerFix.push_back(GetSystemUtilizationP());
 	const auto TempEvent = (*TimeHandle.begin());
 	CurrentTime = TempEvent.time;	
 
@@ -373,12 +374,45 @@ int TimeManager::GetReqCountInDeq() const
     return ReqDeqPriority1.size() + ReqDeqPriority2.size();
 }
 
-void TimeManager::SetGraphicsDataAdmission()
+int TimeManager::GetReqCountInSystem() const
 {
-    for(auto elemTime: Time){
-      ExpRaspAdmission.push_back(1-std::pow(2.71828,-AverageReqAdmissionTime*elemTime));
-    }
+    int TempCount=GetReqCountInDeq();
 
+    if(w1.ReqPriority!=-1)
+        TempCount++;
+    if(w2.ReqPriority!=-1)
+        TempCount++;
+    if(w3.ReqPriority!=-1)
+        TempCount++;
+    if(w4.ReqPriority!=-1)
+        TempCount++;
+    if(w5.ReqPriority!=-1)
+        TempCount++;
+    return TempCount;
+}
+
+void TimeManager::SetGraphicsDataExpAdmission()
+{
+    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+        ExpRaspAdmission.push_back(1-std::pow(2.71828,-AverageReqAdmissionTime*i));
+}
+
+void TimeManager::SetGraphicsDataExpService()
+{
+    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+        ExpRaspService.push_back(1-std::pow(2.71828,-AverageServiceTime*i));
+}
+
+void TimeManager::SetGraphicsDataExpDensityAdmission()
+{
+    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+        ExpRaspDensityAdmission.push_back(AverageReqAdmissionTime*std::pow(2.71828,-AverageReqAdmissionTime*i));
+}
+
+void TimeManager::SetGraphicsDataExpDensityService()
+{
+        for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+            ExpRaspDensityService.push_back(AverageServiceTime*std::pow(2.71828,-AverageServiceTime*i));
 }
 
 bool TimeManager::TimeEquivalently(double l, double r) const

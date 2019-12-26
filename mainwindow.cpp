@@ -76,8 +76,6 @@ void MainWindow::DrawGraphicNs(TimeManager *time_manager)
     ui->GraphicNs->setInteraction(QCP::iRangeDrag);
     ui->GraphicNs->setInteraction(QCP::iRangeZoom);
 
-
-
     ui->GraphicNs->clearGraphs();
     ui->GraphicNs->addGraph();
 
@@ -105,7 +103,6 @@ void MainWindow::DrawGraphicNq(TimeManager *time_manager)
 
     ui->GraphicNq->graph(0)->setData(time_manager->Time,time_manager->NqPerFix);
 
-
     ui->GraphicNq->xAxis->setLabel("Время");
     ui->GraphicNq->yAxis->setLabel("Кол-во заявок");
 
@@ -114,7 +111,7 @@ void MainWindow::DrawGraphicNq(TimeManager *time_manager)
     ui->GraphicNq->replot();
 }
 
-void MainWindow::DrawGraphicReqPerFix(TimeManager* time_manager)
+void MainWindow::DrawGraphicReqInDeqPerFix(TimeManager* time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->ReqCountPerFix.begin(), time_manager->ReqCountPerFix.end());
     ui->GraphicReqPerFix->setInteraction(QCP::iRangeDrag);
@@ -176,22 +173,62 @@ void MainWindow::DrawGraphicExpAdmission(TimeManager *time_manager)
 
 void MainWindow::DrawGraphicExpService(TimeManager *time_manager)
 {
-    /*
     QVector<double>::iterator max = std::max_element(time_manager->ExpRaspService.begin(), time_manager->ExpRaspService.end());
     ui->GraphicExpService->setInteraction(QCP::iRangeDrag);
     ui->GraphicExpService->setInteraction(QCP::iRangeZoom);
 
     ui->GraphicExpService->clearGraphs();
     ui->GraphicExpService->addGraph();
-    ui->GraphicExpService->graph(0)->setData(time_manager->ExpTimeS,time_manager->ExpRaspService);
+    ui->GraphicExpService->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicExpService->graph(0)->setData(time_manager->Time,time_manager->ExpRaspService);
 
     ui->GraphicExpService->xAxis->setLabel("Время");
     ui->GraphicExpService->yAxis->setLabel("Значение функции распределения");
 
-    ui->GraphicExpService->xAxis->setRange(0, *time_manager->ExpTimeS.rbegin());
+    ui->GraphicExpService->xAxis->setRange(0, *time_manager->Time.rbegin());
     ui->GraphicExpService->yAxis->setRange(-1, *max+1);
     ui->GraphicExpService->replot();
-    */
+}
+
+void MainWindow::DrawGraphicExpDensityService(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->ExpRaspDensityService.begin(), time_manager->ExpRaspDensityService.end());
+    ui->GraphicExpDensityService->setInteraction(QCP::iRangeDrag);
+    ui->GraphicExpDensityService->setInteraction(QCP::iRangeZoom);
+
+    ui->GraphicExpDensityService->clearGraphs();
+    ui->GraphicExpDensityService->addGraph();
+    ui->GraphicExpDensityService->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicExpDensityService->graph(0)->setData(time_manager->Time,time_manager->ExpRaspDensityService);
+
+    ui->GraphicExpDensityService->xAxis->setLabel("Время");
+    ui->GraphicExpDensityService->yAxis->setLabel("Значение плотности функции распределения");
+
+    ui->GraphicExpDensityService->xAxis->setRange(0, *time_manager->Time.rbegin());
+    ui->GraphicExpDensityService->yAxis->setRange(0, *max);
+    ui->GraphicExpDensityService->replot();
+}
+
+void MainWindow::DrawGraphicExpDensityAdmission(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->ExpRaspDensityAdmission.begin(), time_manager->ExpRaspDensityAdmission.end());
+    ui->GraphicExpDensityAdmission->setInteraction(QCP::iRangeDrag);
+    ui->GraphicExpDensityAdmission->setInteraction(QCP::iRangeZoom);
+
+    ui->GraphicExpDensityAdmission->clearGraphs();
+    ui->GraphicExpDensityAdmission->addGraph();
+    ui->GraphicExpDensityAdmission->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicExpDensityAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspDensityService);
+
+    ui->GraphicExpDensityAdmission->xAxis->setLabel("Время");
+    ui->GraphicExpDensityAdmission->yAxis->setLabel("Значение плотности функции распределения");
+
+    ui->GraphicExpDensityAdmission->xAxis->setRange(0, *time_manager->Time.rbegin());
+    ui->GraphicExpDensityAdmission->yAxis->setRange(0, *max);
+    ui->GraphicExpDensityAdmission->replot();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -224,7 +261,10 @@ void MainWindow::on_pushButton_clicked()
                 time_manager.CheckReqContainer();
             }
         }
-        time_manager.SetGraphicsDataAdmission();
+        time_manager.SetGraphicsDataExpAdmission();
+        time_manager.SetGraphicsDataExpService();
+        time_manager.SetGraphicsDataExpDensityAdmission();
+        time_manager.SetGraphicsDataExpDensityService();
 
         ui->TBReqAccessed1->setText(QString::number(time_manager.w1.ReqAcceptedCount));
         ui->TBReqAccessed2->setText(QString::number(time_manager.w2.ReqAcceptedCount));
@@ -240,7 +280,7 @@ void MainWindow::on_pushButton_clicked()
         ui->TBNs->setText(QString::number(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs()));
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
 
-        DrawGraphicReqPerFix(&time_manager);
+        DrawGraphicReqInDeqPerFix(&time_manager);
         DrawGraphicPPerFix(&time_manager);
         DrawGraphicNq(&time_manager);
         DrawGraphicNs(&time_manager);
@@ -248,6 +288,8 @@ void MainWindow::on_pushButton_clicked()
         DrawGraphicExpAdmission(&time_manager);
         DrawGraphicExpService(&time_manager);
 
+        DrawGraphicExpDensityAdmission(&time_manager);
+        DrawGraphicExpDensityService(&time_manager);
         ShowProcessedReqTable();
         ShowFailedReqTable(&time_manager);
     }

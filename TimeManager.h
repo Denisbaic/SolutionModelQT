@@ -38,11 +38,24 @@ public:
     QVector<double> ExpRaspAdmission; //QVector<double> ExpTimeA;
     QVector<double> ExpRaspService;   //QVector<double> ExpTimeS;
 
+    QVector<double> ExpRaspDensityService;
+    QVector<double> ExpRaspDensityAdmission;
+
+    QVector<double> ReqCountPerFix;
+    QVector<double> ReqCountInSystemPerFix;
+
     QVector<double> NsPerFix;
     QVector<double> NqPerFix;
     QVector<double> PPerFix;
-    QVector<double> ReqCountPerFix;
+
     QVector<double> Time;
+
+    void SetGraphicsDataExpAdmission();
+    void SetGraphicsDataExpService();
+
+    void SetGraphicsDataExpDensityAdmission();
+    void SetGraphicsDataExpDensityService();
+
     //////////////
 
 	Worker w1;
@@ -80,9 +93,8 @@ public:
 	//2-низкий приоритет
 	int	   GetPriorityForRequest();
 	int	   GetReqCountInDeq() const;
+    int    GetReqCountInSystem() const;
 
-    void SetGraphicsDataAdmission();
-    void SetGraphicsDataService();
 
 	bool TimeEquivalently(double l, double r) const;
 };
