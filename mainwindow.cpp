@@ -283,6 +283,7 @@ void MainWindow::on_pushButton_clicked()
         ui->TBNq->setText(QString::number(time_manager.GetTimeAverageNumberOfRequestsInTheQueueNq()));
         ui->TBNs->setText(QString::number(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs()));
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
+        ui->TBCr->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCr()));
 
         DrawGraphicReqInDeqPerFix(&time_manager);
         DrawGraphicPPerFix(&time_manager);

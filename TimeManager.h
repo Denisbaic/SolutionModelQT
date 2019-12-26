@@ -86,6 +86,8 @@ public:
 	double GetTimeAverageNumberOfRequirementsInTheSystemNs() const;
 	//абсолютная пропускная способность системы 
 	double GetAbsoluteSystemCapacityCa() const;
+    //относительная пропускная способность системы
+    double GetAbsoluteSystemCapacityCr() const;
 
 	//генератор случайных чисел
 	double Exponential_rasp(double med) const;

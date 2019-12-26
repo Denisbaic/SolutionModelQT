@@ -352,6 +352,11 @@ double TimeManager::GetAbsoluteSystemCapacityCa() const
     return (w1.TimeInWork + w2.TimeInWork+w3.TimeInWork+w4.TimeInWork+w5.TimeInWork) / CurrentTime;
 }
 
+double TimeManager::GetAbsoluteSystemCapacityCr() const
+{
+    return GetAbsoluteSystemCapacityCa()/GetAverageWaitingTimeForAnApplicationInQueueTq();
+}
+
 double TimeManager::Exponential_rasp(double med) const
 {
 	const auto y = double(rand()) / RAND_MAX; //равномерно распределенная случайная величина [0,1]
