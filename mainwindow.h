@@ -19,8 +19,11 @@ public:
      void ShowProcessedReqTable();
      void ShowFailedReqTable(class TimeManager* time_manager);
 
-     void DrawGraphicGraphicReqPerFix(TimeManager* time_manager);
-     void DrawGraphicGraphicPPerFix(TimeManager* time_manager);
+     void DrawGraphicNs(TimeManager* time_manager);
+     void DrawGraphicNq(TimeManager* time_manager);
+
+     void DrawGraphicReqPerFix(TimeManager* time_manager);
+     void DrawGraphicPPerFix(TimeManager* time_manager);
      void DrawGraphicExpAdmission(TimeManager* time_manager);
      void DrawGraphicExpService(TimeManager* time_manager);
 

@@ -267,6 +267,8 @@ Event TimeManager::MoveTime()
     Time.push_back(CurrentTime);
     ReqCountPerFix.push_back(GetReqCountInDeq());
     PPerFix.push_back(GetSystemUtilizationP());
+    NsPerFix.push_back(GetTimeAverageNumberOfRequirementsInTheSystemNs());
+    NqPerFix.push_back(GetTimeAverageNumberOfRequestsInTheQueueNq());
 
 	const auto TempEvent = (*TimeHandle.begin());
 	CurrentTime = TempEvent.time;	
@@ -313,6 +315,8 @@ double TimeManager::GetSystemUtilizationP() const
 
 double TimeManager::GetAverageWaitingTimeForAnApplicationInQueueTq() const
 {
+    if(Worker::ProcessedReqQueue.empty())
+        return 0.0;
 	auto TempTime = 0.0;
 	for(auto& elem : Worker::ProcessedReqQueue)
 	{

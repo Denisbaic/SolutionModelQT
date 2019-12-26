@@ -70,12 +70,60 @@ void MainWindow::ShowFailedReqTable(TimeManager* time_manager)
     ui->tableFailedRequests->resizeColumnsToContents();
 }
 
-void MainWindow::DrawGraphicGraphicReqPerFix(TimeManager* time_manager)
+void MainWindow::DrawGraphicNs(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->NsPerFix.begin(), time_manager->NsPerFix.end());
+    ui->GraphicNs->setInteraction(QCP::iRangeDrag);
+    ui->GraphicNs->setInteraction(QCP::iRangeZoom);
+
+
+
+    ui->GraphicNs->clearGraphs();
+    ui->GraphicNs->addGraph();
+
+    ui->GraphicNs->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicNs->graph(0)->setData(time_manager->Time,time_manager->NsPerFix);
+
+    ui->GraphicNs->xAxis->setLabel("Время");
+    ui->GraphicNs->yAxis->setLabel("Кол-во заявок");
+
+    ui->GraphicNs->xAxis->setRange(0, time_manager->CurrentTime);
+    ui->GraphicNs->yAxis->setRange(0, *max);
+    ui->GraphicNs->replot();
+}
+
+void MainWindow::DrawGraphicNq(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->NqPerFix.begin(), time_manager->NqPerFix.end());
+    ui->GraphicNq->setInteraction(QCP::iRangeDrag);
+    ui->GraphicNq->setInteraction(QCP::iRangeZoom);
+
+    ui->GraphicNq->clearGraphs();
+    ui->GraphicNq->addGraph();
+    ui->GraphicNq->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicNq->graph(0)->setData(time_manager->Time,time_manager->NqPerFix);
+
+
+    ui->GraphicNq->xAxis->setLabel("Время");
+    ui->GraphicNq->yAxis->setLabel("Кол-во заявок");
+
+    ui->GraphicNq->xAxis->setRange(0, time_manager->CurrentTime);
+    ui->GraphicNq->yAxis->setRange(0, *max);
+    ui->GraphicNq->replot();
+}
+
+void MainWindow::DrawGraphicReqPerFix(TimeManager* time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->ReqCountPerFix.begin(), time_manager->ReqCountPerFix.end());
+    ui->GraphicReqPerFix->setInteraction(QCP::iRangeDrag);
+    ui->GraphicReqPerFix->setInteraction(QCP::iRangeZoom);
 
     ui->GraphicReqPerFix->clearGraphs();
     ui->GraphicReqPerFix->addGraph();
+    ui->GraphicReqPerFix->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
     ui->GraphicReqPerFix->graph(0)->setData(time_manager->Time,time_manager->ReqCountPerFix);
 
     ui->GraphicReqPerFix->xAxis->setLabel("Время");
@@ -86,12 +134,16 @@ void MainWindow::DrawGraphicGraphicReqPerFix(TimeManager* time_manager)
     ui->GraphicReqPerFix->replot();
 }
 
-void MainWindow::DrawGraphicGraphicPPerFix(TimeManager *time_manager)
+void MainWindow::DrawGraphicPPerFix(TimeManager *time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->PPerFix.begin(), time_manager->PPerFix.end());
+    ui->GraphicPPerFix->setInteraction(QCP::iRangeDrag);
+    ui->GraphicPPerFix->setInteraction(QCP::iRangeZoom);
 
     ui->GraphicPPerFix->clearGraphs();
     ui->GraphicPPerFix->addGraph();
+    ui->GraphicPPerFix->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
     ui->GraphicPPerFix->graph(0)->setData(time_manager->Time,time_manager->PPerFix);
 
     ui->GraphicPPerFix->xAxis->setLabel("Время");
@@ -105,9 +157,13 @@ void MainWindow::DrawGraphicGraphicPPerFix(TimeManager *time_manager)
 void MainWindow::DrawGraphicExpAdmission(TimeManager *time_manager)
 {
      QVector<double>::iterator max = std::max_element(time_manager->ExpRaspAdmission.begin(), time_manager->ExpRaspAdmission.end());
+     ui->GraphicExpAdmission->setInteraction(QCP::iRangeDrag);
+     ui->GraphicExpAdmission->setInteraction(QCP::iRangeZoom);
 
      ui->GraphicExpAdmission->clearGraphs();
      ui->GraphicExpAdmission->addGraph();
+     ui->GraphicExpAdmission->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
      ui->GraphicExpAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspAdmission);
 
      ui->GraphicExpAdmission->xAxis->setLabel("Время");
@@ -122,6 +178,8 @@ void MainWindow::DrawGraphicExpService(TimeManager *time_manager)
 {
     /*
     QVector<double>::iterator max = std::max_element(time_manager->ExpRaspService.begin(), time_manager->ExpRaspService.end());
+    ui->GraphicExpService->setInteraction(QCP::iRangeDrag);
+    ui->GraphicExpService->setInteraction(QCP::iRangeZoom);
 
     ui->GraphicExpService->clearGraphs();
     ui->GraphicExpService->addGraph();
@@ -182,8 +240,11 @@ void MainWindow::on_pushButton_clicked()
         ui->TBNs->setText(QString::number(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs()));
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
 
-        DrawGraphicGraphicReqPerFix(&time_manager);
-        DrawGraphicGraphicPPerFix(&time_manager);
+        DrawGraphicReqPerFix(&time_manager);
+        DrawGraphicPPerFix(&time_manager);
+        DrawGraphicNq(&time_manager);
+        DrawGraphicNs(&time_manager);
+
         DrawGraphicExpAdmission(&time_manager);
         DrawGraphicExpService(&time_manager);
 

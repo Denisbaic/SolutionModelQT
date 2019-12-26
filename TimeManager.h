@@ -38,6 +38,8 @@ public:
     QVector<double> ExpRaspAdmission; //QVector<double> ExpTimeA;
     QVector<double> ExpRaspService;   //QVector<double> ExpTimeS;
 
+    QVector<double> NsPerFix;
+    QVector<double> NqPerFix;
     QVector<double> PPerFix;
     QVector<double> ReqCountPerFix;
     QVector<double> Time;
