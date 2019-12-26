@@ -21,6 +21,8 @@ public:
 
      void DrawGraphicGraphicReqPerFix(TimeManager* time_manager);
      void DrawGraphicGraphicPPerFix(TimeManager* time_manager);
+     void DrawGraphicExpAdmission(TimeManager* time_manager);
+     void DrawGraphicExpService(TimeManager* time_manager);
 
 private slots:
     void on_pushButton_clicked();

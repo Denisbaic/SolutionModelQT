@@ -3,6 +3,7 @@
 #include "TimeManager.h"
 #include "QStandardItemModel"
 #include "QStandardItem"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -73,6 +74,7 @@ void MainWindow::DrawGraphicGraphicReqPerFix(TimeManager* time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->ReqCountPerFix.begin(), time_manager->ReqCountPerFix.end());
 
+    ui->GraphicReqPerFix->clearGraphs();
     ui->GraphicReqPerFix->addGraph();
     ui->GraphicReqPerFix->graph(0)->setData(time_manager->Time,time_manager->ReqCountPerFix);
 
@@ -80,7 +82,7 @@ void MainWindow::DrawGraphicGraphicReqPerFix(TimeManager* time_manager)
     ui->GraphicReqPerFix->yAxis->setLabel("Кол-во заявок");
 
     ui->GraphicReqPerFix->xAxis->setRange(0, time_manager->CurrentTime);
-    ui->GraphicReqPerFix->yAxis->setRange(-1, *max);
+    ui->GraphicReqPerFix->yAxis->setRange(0, *max);
     ui->GraphicReqPerFix->replot();
 }
 
@@ -88,6 +90,7 @@ void MainWindow::DrawGraphicGraphicPPerFix(TimeManager *time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->PPerFix.begin(), time_manager->PPerFix.end());
 
+    ui->GraphicPPerFix->clearGraphs();
     ui->GraphicPPerFix->addGraph();
     ui->GraphicPPerFix->graph(0)->setData(time_manager->Time,time_manager->PPerFix);
 
@@ -95,8 +98,42 @@ void MainWindow::DrawGraphicGraphicPPerFix(TimeManager *time_manager)
     ui->GraphicPPerFix->yAxis->setLabel("Коэффициент использования системы");
 
     ui->GraphicPPerFix->xAxis->setRange(0, time_manager->CurrentTime);
-    ui->GraphicPPerFix->yAxis->setRange(-1, *max);
+    ui->GraphicPPerFix->yAxis->setRange(-1, *max+1);
     ui->GraphicPPerFix->replot();
+}
+
+void MainWindow::DrawGraphicExpAdmission(TimeManager *time_manager)
+{
+     QVector<double>::iterator max = std::max_element(time_manager->ExpRaspAdmission.begin(), time_manager->ExpRaspAdmission.end());
+
+     ui->GraphicExpAdmission->clearGraphs();
+     ui->GraphicExpAdmission->addGraph();
+     ui->GraphicExpAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspAdmission);
+
+     ui->GraphicExpAdmission->xAxis->setLabel("Время");
+     ui->GraphicExpAdmission->yAxis->setLabel("Значение функции распределения");
+
+     ui->GraphicExpAdmission->xAxis->setRange(0, *time_manager->Time.rbegin());
+     ui->GraphicExpAdmission->yAxis->setRange(-1, *max+1);
+     ui->GraphicExpAdmission->replot();
+}
+
+void MainWindow::DrawGraphicExpService(TimeManager *time_manager)
+{
+    /*
+    QVector<double>::iterator max = std::max_element(time_manager->ExpRaspService.begin(), time_manager->ExpRaspService.end());
+
+    ui->GraphicExpService->clearGraphs();
+    ui->GraphicExpService->addGraph();
+    ui->GraphicExpService->graph(0)->setData(time_manager->ExpTimeS,time_manager->ExpRaspService);
+
+    ui->GraphicExpService->xAxis->setLabel("Время");
+    ui->GraphicExpService->yAxis->setLabel("Значение функции распределения");
+
+    ui->GraphicExpService->xAxis->setRange(0, *time_manager->ExpTimeS.rbegin());
+    ui->GraphicExpService->yAxis->setRange(-1, *max+1);
+    ui->GraphicExpService->replot();
+    */
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -129,7 +166,7 @@ void MainWindow::on_pushButton_clicked()
                 time_manager.CheckReqContainer();
             }
         }
-
+        time_manager.SetGraphicsDataAdmission();
 
         ui->TBReqAccessed1->setText(QString::number(time_manager.w1.ReqAcceptedCount));
         ui->TBReqAccessed2->setText(QString::number(time_manager.w2.ReqAcceptedCount));
@@ -147,6 +184,8 @@ void MainWindow::on_pushButton_clicked()
 
         DrawGraphicGraphicReqPerFix(&time_manager);
         DrawGraphicGraphicPPerFix(&time_manager);
+        DrawGraphicExpAdmission(&time_manager);
+        DrawGraphicExpService(&time_manager);
 
         ShowProcessedReqTable();
         ShowFailedReqTable(&time_manager);

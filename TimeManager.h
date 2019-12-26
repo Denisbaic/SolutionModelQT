@@ -35,6 +35,9 @@ public:
 
     std::deque<Request> ReqFailed;
     ////GRAPHIC DATA///
+    QVector<double> ExpRaspAdmission; //QVector<double> ExpTimeA;
+    QVector<double> ExpRaspService;   //QVector<double> ExpTimeS;
+
     QVector<double> PPerFix;
     QVector<double> ReqCountPerFix;
     QVector<double> Time;
@@ -76,7 +79,8 @@ public:
 	int	   GetPriorityForRequest();
 	int	   GetReqCountInDeq() const;
 
-
+    void SetGraphicsDataAdmission();
+    void SetGraphicsDataService();
 
 	bool TimeEquivalently(double l, double r) const;
 };

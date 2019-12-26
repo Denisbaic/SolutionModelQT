@@ -16,7 +16,12 @@ TimeManager::TimeManager(int req_need, double _AverageServiceTime, double _Avera
 void TimeManager::AddNextReqBeforeSomeTime()
 {
 	ReqAdded++;
-	TimeHandle.insert(Event(EventDestination::NewReqest, Exponential_rasp(AverageReqAdmissionTime) + CurrentTime));
+    auto TempTime=Exponential_rasp(AverageReqAdmissionTime);
+    TimeHandle.insert(Event(EventDestination::NewReqest, TempTime + CurrentTime));
+    //////—бор статистики//////////
+    //ExpRaspAdmission.push_back(TempTime);
+    //ExpTimeA.push_back(CurrentTime);
+    ///////////////////////////////
 }
 
 Worker* TimeManager::FindFreeWorker()
@@ -72,6 +77,10 @@ Worker* TimeManager::FindWorkerWithLowPriority()
 void TimeManager::UseFreeWorkerWithNewReq(Worker* w, int ReqPriority)
 {
 	const double TimeTemp = Exponential_rasp(AverageServiceTime);
+    //////—бор статистики//////////
+    //ExpRaspService.push_back(TimeTemp);
+    //ExpTimeS.push_back(CurrentTime);
+    ///////////////////////////////
 	w->wf = TimeTemp + CurrentTime;
 	w->TimeInWork += TimeTemp;
 	w->ReqPriority = ReqPriority;
@@ -93,6 +102,10 @@ void TimeManager::UseBusyWorkerWithNewReq(Worker* w)
 	w->TimeInWork -= w->wf - CurrentTime;
 
 	const double TimeTemp = Exponential_rasp(AverageServiceTime);
+
+    //////—бор статистики//////////
+    //ExpRaspService.push_back(TimeTemp);
+    ///////////////////////////////
 	w->wf = TimeTemp + CurrentTime;
 	w->TimeInWork += TimeTemp;
 	w->_event = Event(SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
@@ -250,13 +263,14 @@ void TimeManager::CheckReqContainer()
 
 Event TimeManager::MoveTime()
 {
+
     Time.push_back(CurrentTime);
     ReqCountPerFix.push_back(GetReqCountInDeq());
     PPerFix.push_back(GetSystemUtilizationP());
 
 	const auto TempEvent = (*TimeHandle.begin());
-	CurrentTime = TempEvent.time;
-	
+	CurrentTime = TempEvent.time;	
+
 	std::cout << CurrentTime<<" ";
 	std::cout << TempEvent.time << " ";
 	
@@ -292,6 +306,8 @@ Worker* TimeManager::FindWorkerByTime(double Time)
 
 double TimeManager::GetSystemUtilizationP() const
 {
+    if(CurrentTime==0)
+        return 0.0;
 	return (w1.TimeInWork + w2.TimeInWork+w3.TimeInWork+w4.TimeInWork+w5.TimeInWork) / (CurrentTime * 5);
 }
 
@@ -350,7 +366,15 @@ int TimeManager::GetPriorityForRequest()
 
 int TimeManager::GetReqCountInDeq() const
 {
-	return ReqDeqPriority1.size() + ReqDeqPriority2.size();
+    return ReqDeqPriority1.size() + ReqDeqPriority2.size();
+}
+
+void TimeManager::SetGraphicsDataAdmission()
+{
+    for(auto elemTime: Time){
+      ExpRaspAdmission.push_back(1-std::pow(2.71828,-AverageReqAdmissionTime*elemTime));
+    }
+
 }
 
 bool TimeManager::TimeEquivalently(double l, double r) const

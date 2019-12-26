@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1068</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>801</width>
-      <height>571</height>
+      <width>1051</width>
+      <height>581</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -643,13 +643,61 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>801</width>
-        <height>521</height>
+        <width>1041</width>
+        <height>561</height>
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
+      <widget class="QWidget" name="tab_8">
+       <attribute name="title">
+        <string>Графики распределения  случайной величины</string>
+       </attribute>
+       <widget class="QTabWidget" name="tabWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1031</width>
+          <height>531</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="tab_9">
+         <attribute name="title">
+          <string>График  времени обработки</string>
+         </attribute>
+         <widget class="QCustomPlot" name="GraphicExpService" native="true">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1021</width>
+            <height>491</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="tab_10">
+         <attribute name="title">
+          <string>График времени поступления</string>
+         </attribute>
+         <widget class="QCustomPlot" name="GraphicExpAdmission" native="true">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1021</width>
+            <height>491</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
       <widget class="QWidget" name="tab_6">
        <attribute name="title">
         <string>График по времени числа требований в очереди </string>
@@ -659,7 +707,37 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>771</width>
+          <width>1021</width>
+          <height>481</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_11">
+       <attribute name="title">
+        <string>График по времени числа требований в очереди</string>
+       </attribute>
+       <widget class="QCustomPlot" name="GraphicNq" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>1021</width>
+          <height>481</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_12">
+       <attribute name="title">
+        <string>График по времени числа требований в системе</string>
+       </attribute>
+       <widget class="QCustomPlot" name="GraphicNs" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>1021</width>
           <height>481</height>
          </rect>
         </property>
@@ -674,7 +752,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>771</width>
+          <width>1021</width>
           <height>481</height>
          </rect>
         </property>
@@ -689,7 +767,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1068</width>
      <height>20</height>
     </rect>
    </property>

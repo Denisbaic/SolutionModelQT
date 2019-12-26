@@ -1,7 +1,7 @@
 #include "Request.h"
 
-Request::Request(double work_time, double _work_begin_time, double arrival_time, double exit_time): WorkTime(work_time), WorkBeginTime(_work_begin_time),
-ArrivalTime(arrival_time),
+Request::Request(double work_time, double _work_begin_time, double arrival_time, double exit_time): WorkTime(work_time),
+ArrivalTime(arrival_time),WorkBeginTime(_work_begin_time),
 ExitTime(exit_time)
 {
 

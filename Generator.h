@@ -9,7 +9,7 @@ class Generator
 public:
 	unsigned int CurrentValue;
 	//Generator();
-	Generator(unsigned long _HiValue, unsigned long LoValue);
+    Generator(unsigned long _HiValue, unsigned long _LoValue);
 	~Generator();
 	unsigned int next();
 };
