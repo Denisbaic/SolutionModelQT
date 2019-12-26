@@ -349,12 +349,12 @@ double TimeManager::GetTimeAverageNumberOfRequirementsInTheSystemNs() const
 
 double TimeManager::GetAbsoluteSystemCapacityCa() const
 {
-    return (w1.TimeInWork + w2.TimeInWork+w3.TimeInWork+w4.TimeInWork+w5.TimeInWork) / CurrentTime;
+    return Worker::ProcessedReqQueue.size() / CurrentTime;
 }
 
 double TimeManager::GetAbsoluteSystemCapacityCr() const
 {
-    return GetAbsoluteSystemCapacityCa()/GetAverageWaitingTimeForAnApplicationInQueueTq();
+    return Worker::ProcessedReqQueue.size()/(Worker::ProcessedReqQueue.size()+ReqFailed.size());
 }
 
 double TimeManager::Exponential_rasp(double med) const

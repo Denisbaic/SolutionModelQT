@@ -135,6 +135,26 @@ void MainWindow::DrawGraphicReqInDeqPerFix(TimeManager* time_manager)
     ui->GraphicReqPerFix->replot();
 }
 
+void MainWindow::DrawGraphicReqInSystemPerFix(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->ReqCountInSystemPerFix.begin(), time_manager->ReqCountInSystemPerFix.end());
+    ui->GraphicReqInSystemPerFix->setInteraction(QCP::iRangeDrag);
+    ui->GraphicReqInSystemPerFix->setInteraction(QCP::iRangeZoom);
+
+    ui->GraphicReqInSystemPerFix->clearGraphs();
+    ui->GraphicReqInSystemPerFix->addGraph();
+    ui->GraphicReqInSystemPerFix->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
+
+    ui->GraphicReqInSystemPerFix->graph(0)->setData(time_manager->Time,time_manager->ReqCountInSystemPerFix);
+
+    ui->GraphicReqInSystemPerFix->xAxis->setLabel("Время");
+    ui->GraphicReqInSystemPerFix->yAxis->setLabel("Кол-во заявок");
+
+    ui->GraphicReqInSystemPerFix->xAxis->setRange(0, time_manager->CurrentTime);
+    ui->GraphicReqInSystemPerFix->yAxis->setRange(0, *max);
+    ui->GraphicReqInSystemPerFix->replot();
+}
+
 void MainWindow::DrawGraphicPPerFix(TimeManager *time_manager)
 {
     QVector<double>::iterator max = std::max_element(time_manager->PPerFix.begin(), time_manager->PPerFix.end());
@@ -286,6 +306,7 @@ void MainWindow::on_pushButton_clicked()
         ui->TBCr->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCr()));
 
         DrawGraphicReqInDeqPerFix(&time_manager);
+        DrawGraphicReqInSystemPerFix(&time_manager);
         DrawGraphicPPerFix(&time_manager);
         DrawGraphicNq(&time_manager);
         DrawGraphicNs(&time_manager);

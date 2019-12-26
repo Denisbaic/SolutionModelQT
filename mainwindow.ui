@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -679,7 +679,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_8">
        <attribute name="title">
@@ -743,7 +743,7 @@ p, li { white-space: pre-wrap; }
          </rect>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_14">
          <attribute name="title">
@@ -792,9 +792,24 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </widget>
+      <widget class="QWidget" name="tab_18">
+       <attribute name="title">
+        <string>График по времени числа требований в системе</string>
+       </attribute>
+       <widget class="QCustomPlot" name="GraphicReqInSystemPerFix" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>1021</width>
+          <height>481</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
       <widget class="QWidget" name="tab_11">
        <attribute name="title">
-        <string>График по времени числа требований в очереди</string>
+        <string>График по времени среднего числа требований в очереди</string>
        </attribute>
        <widget class="QCustomPlot" name="GraphicNq" native="true">
         <property name="geometry">
@@ -809,7 +824,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QWidget" name="tab_12">
        <attribute name="title">
-        <string>График по времени числа требований в системе</string>
+        <string>График по времени среднего числа требований в системе</string>
        </attribute>
        <widget class="QCustomPlot" name="GraphicNs" native="true">
         <property name="geometry">
