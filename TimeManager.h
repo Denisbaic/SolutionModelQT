@@ -35,6 +35,7 @@ public:
 
     std::deque<Request> ReqFailed;
     ////GRAPHIC DATA///
+    QVector<double> PPerFix;
     QVector<double> ReqCountPerFix;
     QVector<double> Time;
     //////////////

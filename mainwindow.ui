@@ -638,15 +638,48 @@ p, li { white-space: pre-wrap; }
      <attribute name="title">
       <string>Графики</string>
      </attribute>
-     <widget class="QCustomPlot" name="widget" native="true">
+     <widget class="QTabWidget" name="tabWidget_3">
       <property name="geometry">
        <rect>
-        <x>80</x>
-        <y>100</y>
-        <width>561</width>
-        <height>381</height>
+        <x>0</x>
+        <y>0</y>
+        <width>801</width>
+        <height>521</height>
        </rect>
       </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>График по времени числа требований в очереди </string>
+       </attribute>
+       <widget class="QCustomPlot" name="GraphicReqPerFix" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>771</width>
+          <height>481</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>Графики по времени коэффициента использования системы</string>
+       </attribute>
+       <widget class="QCustomPlot" name="GraphicPPerFix" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>771</width>
+          <height>481</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </widget>
    </widget>

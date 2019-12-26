@@ -252,6 +252,8 @@ Event TimeManager::MoveTime()
 {
     Time.push_back(CurrentTime);
     ReqCountPerFix.push_back(GetReqCountInDeq());
+    PPerFix.push_back(GetSystemUtilizationP());
+
 	const auto TempEvent = (*TimeHandle.begin());
 	CurrentTime = TempEvent.time;
 	

@@ -19,8 +19,8 @@ public:
      void ShowProcessedReqTable();
      void ShowFailedReqTable(class TimeManager* time_manager);
 
-     void DrawGraphic(TimeManager* time_manager);
-
+     void DrawGraphicGraphicReqPerFix(TimeManager* time_manager);
+     void DrawGraphicGraphicPPerFix(TimeManager* time_manager);
 
 private slots:
     void on_pushButton_clicked();

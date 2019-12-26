@@ -69,17 +69,34 @@ void MainWindow::ShowFailedReqTable(TimeManager* time_manager)
     ui->tableFailedRequests->resizeColumnsToContents();
 }
 
-void MainWindow::DrawGraphic(TimeManager* time_manager)
+void MainWindow::DrawGraphicGraphicReqPerFix(TimeManager* time_manager)
 {
-    ui->widget->addGraph();
-    ui->widget->graph(0)->setData(time_manager->Time,time_manager->ReqCountPerFix);
+    QVector<double>::iterator max = std::max_element(time_manager->ReqCountPerFix.begin(), time_manager->ReqCountPerFix.end());
 
-    ui->widget->xAxis->setLabel("Время");
-    ui->widget->yAxis->setLabel("Кол-во заявок");
+    ui->GraphicReqPerFix->addGraph();
+    ui->GraphicReqPerFix->graph(0)->setData(time_manager->Time,time_manager->ReqCountPerFix);
 
-    ui->widget->xAxis->setRange(0, time_manager->CurrentTime);
-    ui->widget->yAxis->setRange(-1, time_manager->Limit+1);
-    ui->widget->replot();
+    ui->GraphicReqPerFix->xAxis->setLabel("Время");
+    ui->GraphicReqPerFix->yAxis->setLabel("Кол-во заявок");
+
+    ui->GraphicReqPerFix->xAxis->setRange(0, time_manager->CurrentTime);
+    ui->GraphicReqPerFix->yAxis->setRange(-1, *max);
+    ui->GraphicReqPerFix->replot();
+}
+
+void MainWindow::DrawGraphicGraphicPPerFix(TimeManager *time_manager)
+{
+    QVector<double>::iterator max = std::max_element(time_manager->PPerFix.begin(), time_manager->PPerFix.end());
+
+    ui->GraphicPPerFix->addGraph();
+    ui->GraphicPPerFix->graph(0)->setData(time_manager->Time,time_manager->PPerFix);
+
+    ui->GraphicPPerFix->xAxis->setLabel("Время");
+    ui->GraphicPPerFix->yAxis->setLabel("Коэффициент использования системы");
+
+    ui->GraphicPPerFix->xAxis->setRange(0, time_manager->CurrentTime);
+    ui->GraphicPPerFix->yAxis->setRange(-1, *max);
+    ui->GraphicPPerFix->replot();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -128,7 +145,8 @@ void MainWindow::on_pushButton_clicked()
         ui->TBNs->setText(QString::number(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs()));
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
 
-        DrawGraphic(&time_manager);
+        DrawGraphicGraphicReqPerFix(&time_manager);
+        DrawGraphicGraphicPPerFix(&time_manager);
 
         ShowProcessedReqTable();
         ShowFailedReqTable(&time_manager);
