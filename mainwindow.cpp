@@ -21,6 +21,33 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::ShowWorkerInfoTable(TimeManager *time_manager)
+{
+    QStandardItemModel *model = new QStandardItemModel;
+    //Заголовки столбцов
+    QStringList horizontalHeader;
+    horizontalHeader.append("Время в работе");
+    horizontalHeader.append("Заявок принято");
+
+    //Заголовки строк
+    QStringList verticalHeader;
+
+    model->setHorizontalHeaderLabels(horizontalHeader);
+    model->setVerticalHeaderLabels(verticalHeader);
+
+    for (int i=0;i<time_manager->CountOfWorkers;++i) {
+        int Index=model->rowCount();
+        QStandardItem* item = new QStandardItem(QString::number(time_manager->GroupOfWorkers[i].TimeInWork));
+        model->setItem(Index, 0, item);
+        item = new QStandardItem(QString::number(time_manager->GroupOfWorkers[i].ReqAcceptedCount));
+        model->setItem(Index, 1, item);
+    }
+    ui->TWorkerInfo->setModel(model);
+
+    ui->TWorkerInfo->resizeRowsToContents();
+    ui->TWorkerInfo->resizeColumnsToContents();
+}
+
 void MainWindow::ShowProcessedReqTable(){
     QStandardItemModel *model = new QStandardItemModel;
 
@@ -257,11 +284,12 @@ void MainWindow::DrawGraphicExpDensityAdmission(TimeManager *time_manager)
 
 void MainWindow::on_pushButton_clicked()
 {
-    int ReqNeed=ui->TBReqNeed->toPlainText().toInt();
+    int ReqNeed=ui->TBReqNeed->toPlainText().toInt(), WorkerCount=ui->TBWorkerCount->toPlainText().toInt();
     double AverageAdmissionTime=ui->TBAdmissionTime->toPlainText().toDouble(),
         AverageServiceTime=ui->TBAverageServiceTime->toPlainText().toDouble(),
         ReqLimit=ui->TBReqLimit->toPlainText().toDouble();
-    TimeManager time_manager(ReqNeed, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+
+    TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();
@@ -290,11 +318,6 @@ void MainWindow::on_pushButton_clicked()
         time_manager.SetGraphicsDataExpDensityAdmission();
         time_manager.SetGraphicsDataExpDensityService();
 
-        ui->TBReqAccessed1->setText(QString::number(time_manager.w1.ReqAcceptedCount));
-        ui->TBReqAccessed2->setText(QString::number(time_manager.w2.ReqAcceptedCount));
-        ui->TBReqAccessed3->setText(QString::number(time_manager.w3.ReqAcceptedCount));
-        ui->TBReqAccessed4->setText(QString::number(time_manager.w4.ReqAcceptedCount));
-        ui->TBReqAccessed5->setText(QString::number(time_manager.w5.ReqAcceptedCount));
         ui->TBReqFailedCoint->setText(QString::number(time_manager.ReqFailed.size()));
 
         ui->TBP ->setText(QString::number(time_manager.GetSystemUtilizationP()));
@@ -317,9 +340,11 @@ void MainWindow::on_pushButton_clicked()
         DrawGraphicExpDensityAdmission(&time_manager);
         DrawGraphicExpDensityService(&time_manager);
 
+        ShowWorkerInfoTable(&time_manager);
         ShowProcessedReqTable();
         ShowFailedReqTable(&time_manager);
-    }
+}
+
 void MainWindow::AddRowToTableFromDeq(QStandardItemModel *model, std::deque<Request> *deq)
 {
     if(deq->empty())

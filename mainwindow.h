@@ -16,8 +16,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+     void ShowWorkerInfoTable(class TimeManager* time_manager);
      void ShowProcessedReqTable();
-     void ShowFailedReqTable(class TimeManager* time_manager);
+     void ShowFailedReqTable(TimeManager* time_manager);
 
      void DrawGraphicNs(TimeManager* time_manager);
      void DrawGraphicNq(TimeManager* time_manager);
@@ -34,6 +36,7 @@ private slots:
     void on_pushButton_clicked();
 
 private:
+
     void AddRowToTableFromDeq(class QStandardItemModel* model, std::deque<Request>* deq);
     Ui::MainWindow *ui;
 };

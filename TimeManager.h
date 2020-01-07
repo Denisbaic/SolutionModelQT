@@ -25,8 +25,9 @@ class TimeManager
 	bool TryToPushReqWithHighPriority();
 
 public:
-	TimeManager(int req_need, double _AverageServiceTime, double _AverageReqAdmissionTime);
-	double AverageServiceTime;
+    TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime);
+    ~TimeManager();
+    double AverageServiceTime;
 	double AverageReqAdmissionTime;
 	int ReqAdded = 0;
 	int ReqNeed = 100;
@@ -58,11 +59,14 @@ public:
 
     //////////////
 
+    int CountOfWorkers;
 	Worker w1;
 	Worker w2;
 	Worker w3;
 	Worker w4;
 	Worker w5;
+
+    Worker* GroupOfWorkers;
 
 	double CurrentTime = 0.f;
 

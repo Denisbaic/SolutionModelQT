@@ -3,7 +3,7 @@
 #include <iostream>
 #include <time.h>
 
-TimeManager::TimeManager(int req_need, double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
+TimeManager::TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
                                                                                                 AverageServiceTime(_AverageServiceTime),
                                                                                                 AverageReqAdmissionTime(_AverageReqAdmissionTime),
                                                                                                 ReqAdded(0),
@@ -11,6 +11,13 @@ TimeManager::TimeManager(int req_need, double _AverageServiceTime, double _Avera
                                                                                                 CurrentTime(0.f)
 {
 	srand(time(NULL));
+    CountOfWorkers=WorkersCount;
+    GroupOfWorkers=new Worker[WorkersCount];
+}
+
+TimeManager::~TimeManager()
+{
+    delete[] GroupOfWorkers;
 }
 
 void TimeManager::AddNextReqBeforeSomeTime()
@@ -26,7 +33,13 @@ void TimeManager::AddNextReqBeforeSomeTime()
 
 Worker* TimeManager::FindFreeWorker()
 {
-	if(w1.ReqPriority==-1)
+    for(int i=0;i<CountOfWorkers;i++){
+        if(GroupOfWorkers[i].ReqPriority==-1){
+            return &GroupOfWorkers[i];
+        }
+    }
+    /*
+    if(w1.ReqPriority==-1)
 	{
 		return &w1;
 	}
@@ -46,11 +59,18 @@ Worker* TimeManager::FindFreeWorker()
 	{
 		return &w5;
 	}
+    */
 	return nullptr;
 }
 
 Worker* TimeManager::FindWorkerWithLowPriority()
 {
+    for(int i=0;i<CountOfWorkers;i++){
+        if(GroupOfWorkers[i].ReqPriority==2){
+            return &GroupOfWorkers[i];
+        }
+    }
+    /*
 	if (w1.ReqPriority == 2)
 	{
 		return &w1;
@@ -71,6 +91,7 @@ Worker* TimeManager::FindWorkerWithLowPriority()
 	{
 		return &w5;
 	}
+    */
 	return nullptr;
 }
 
@@ -311,7 +332,12 @@ double TimeManager::GetSystemUtilizationP() const
 {
     if(CurrentTime==0)
         return 0.0;
-	return (w1.TimeInWork + w2.TimeInWork+w3.TimeInWork+w4.TimeInWork+w5.TimeInWork) / (CurrentTime * 5);
+    double Temp=0.0;
+
+    for(int i=0;i<CountOfWorkers;i++){
+        Temp+=GroupOfWorkers[i].TimeInWork;
+    }
+    return Temp/ (CurrentTime * CountOfWorkers);
 }
 
 double TimeManager::GetAverageWaitingTimeForAnApplicationInQueueTq() const
@@ -383,6 +409,11 @@ int TimeManager::GetReqCountInSystem() const
 {
     int TempCount=GetReqCountInDeq();
 
+    for(int i=0;i<CountOfWorkers;i++){
+        if(GroupOfWorkers[i].ReqPriority!=-1)
+            TempCount++;
+    }
+    /*
     if(w1.ReqPriority!=-1)
         TempCount++;
     if(w2.ReqPriority!=-1)
@@ -393,6 +424,7 @@ int TimeManager::GetReqCountInSystem() const
         TempCount++;
     if(w5.ReqPriority!=-1)
         TempCount++;
+     */
     return TempCount;
 }
 
