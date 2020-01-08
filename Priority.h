@@ -5,6 +5,7 @@
 class Priority
 {
 public:
+    Priority();
     Priority(int _priority, bool _absolutePriority);
     int priority;
     bool absolutePriority;

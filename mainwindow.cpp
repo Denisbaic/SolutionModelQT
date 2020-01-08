@@ -307,7 +307,7 @@ void MainWindow::DrawGraphicExpDensityAdmission(TimeManager *time_manager)
     ui->GraphicExpDensityAdmission->addGraph();
     ui->GraphicExpDensityAdmission->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-    ui->GraphicExpDensityAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspDensityService);
+    ui->GraphicExpDensityAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspAdmission);
 
     ui->GraphicExpDensityAdmission->xAxis->setLabel("Время");
     ui->GraphicExpDensityAdmission->yAxis->setLabel("Значение плотности функции распределения");
@@ -334,7 +334,7 @@ void MainWindow::on_pushButton_clicked()
     if(sum>=1.0 && !TimeManager::TimeEquivalently(sum,1.0)){
         return;
     }
-    TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+    TimeManager time_manager(ReqNeed, WorkerCount,2, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();

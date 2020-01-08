@@ -12,8 +12,6 @@ class TimeManager
 	std::deque<Request> ReqDeqPriority1;
 	std::deque<Request> ReqDeqPriority2;
 
-
-
 	Worker* FindFreeWorker();
 	Worker* FindWorkerWithLowPriority();
 	void UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
@@ -25,7 +23,7 @@ class TimeManager
 	bool TryToPushReqWithHighPriority();
 
 public:
-    TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime);
+    TimeManager(int req_need,int WorkersCount,int _CountOfPriority, double _AverageServiceTime, double _AverageReqAdmissionTime);
     ~TimeManager();
     double AverageServiceTime;
 	double AverageReqAdmissionTime;
@@ -68,6 +66,9 @@ public:
 
     Worker* GroupOfWorkers;
 
+    int CountOfPriority;
+    class Priority* PriorityArr;
+
 	double CurrentTime = 0.f;
 
 	void AddNextReqBeforeSomeTime();
@@ -100,7 +101,8 @@ public:
 	int	   GetPriorityForRequest();
 	int	   GetReqCountInDeq() const;
     int    GetReqCountInSystem() const;
-
+    void   SetPriorityProbability();
+    std::pair<double,double> GetPriorityProbability(int Priority);
 
     static bool TimeEquivalently(double l, double r);
 };

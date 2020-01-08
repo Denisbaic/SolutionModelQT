@@ -1,9 +1,10 @@
 #include "TimeManager.h"
 #include <cmath>
 #include <iostream>
+#include "Priority.h"
 #include <time.h>
-
-TimeManager::TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
+#include <cassert>
+TimeManager::TimeManager(int req_need,int WorkersCount,int _CountOfPriority,  double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
                                                                                                 AverageServiceTime(_AverageServiceTime),
                                                                                                 AverageReqAdmissionTime(_AverageReqAdmissionTime),
                                                                                                 ReqAdded(0),
@@ -13,11 +14,14 @@ TimeManager::TimeManager(int req_need,int WorkersCount, double _AverageServiceTi
 	srand(time(NULL));
     CountOfWorkers=WorkersCount;
     GroupOfWorkers=new Worker[WorkersCount];
+    CountOfPriority=_CountOfPriority;
+    PriorityArr=new Priority[CountOfPriority];
 }
 
 TimeManager::~TimeManager()
 {
     delete[] GroupOfWorkers;
+    delete[] PriorityArr;
 }
 
 void TimeManager::AddNextReqBeforeSomeTime()
@@ -427,6 +431,27 @@ int TimeManager::GetReqCountInSystem() const
         TempCount++;
      */
     return TempCount;
+}
+
+void TimeManager::SetPriorityProbability()
+{
+    for(int i=1;i<CountOfPriority;++i){
+        PriorityArr[i].priority+=PriorityArr[i-1].priority;
+    }
+}
+
+std::pair<double, double> TimeManager::GetPriorityProbability(int Priority)
+{
+    Priority--;
+    if(Priority==0){
+        return std::pair<double,double>(0.0,PriorityArr[0].priority);
+    }
+    else if(Priority>0 && Priority<CountOfPriority){
+        return std::pair<double,double>(PriorityArr[Priority-1].priority,PriorityArr[Priority].priority);
+    }
+    else{
+        throw std::invalid_argument( "Priority out of bounds" );
+    }
 }
 
 void TimeManager::SetGraphicsDataExpAdmission()
