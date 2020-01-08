@@ -14,6 +14,41 @@ MainWindow::MainWindow(QWidget *parent)
      QPixmap pix2("E:/QTProjects/SolutionModelAlexey/Block-sheme SMO.png");
     ui->label_18->setPixmap(pix);
     ui->label_19->setPixmap(pix2);
+
+    QStandardItemModel *model = new QStandardItemModel;
+    //Заголовки столбцов
+    QStringList horizontalHeader;
+    horizontalHeader.append("Вероятность");
+
+    model->setHorizontalHeaderLabels(horizontalHeader);
+
+    ui->TLowPriority->setModel(model);
+
+    model = new QStandardItemModel;
+
+
+    model->setHorizontalHeaderLabels(horizontalHeader);
+
+
+
+    ui->THighPriority->setModel(model);
+
+/*
+    using namespace InsertRemove;
+    VariantMatrix data;
+    ::demoMatrix(data);
+
+    Model model(data);
+
+    ui->TTest->setModel(&model);
+
+    Panel* panel=new Panel(EverythingAllowed,EverythingAllowed);
+    panel->setPolicy(Qt::Horizontal, (PolicyFlags) RemoveAllowed | AppendAllowed );
+    panel->attach(ui->TTest);
+
+    ui->TTest->show();
+    ::resize(ui->TTest,600,400);
+    */
 }
 
 MainWindow::~MainWindow()
@@ -289,6 +324,16 @@ void MainWindow::on_pushButton_clicked()
         AverageServiceTime=ui->TBAverageServiceTime->toPlainText().toDouble(),
         ReqLimit=ui->TBReqLimit->toPlainText().toDouble();
 
+    double sum=0.0;
+    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
+       sum+= ui->TLowPriority->model()->index(i,0).data().toDouble();
+    }
+    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
+       sum+= ui->THighPriority->model()->index(i,0).data().toDouble();
+    }
+    if(sum>=1.0 && !TimeManager::TimeEquivalently(sum,1.0)){
+        return;
+    }
     TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
@@ -368,4 +413,14 @@ void MainWindow::AddRowToTableFromDeq(QStandardItemModel *model, std::deque<Requ
     //ExitTime
     item = new QStandardItem(QString::number(TempReq.ExitTime));
     model->setItem(Index, 3, item);
+}
+
+void MainWindow::on_pushButtonLowPriority_clicked()
+{
+    ui->TLowPriority->model()->insertRow(ui->TLowPriority->model()->rowCount(QModelIndex()));
+}
+
+void MainWindow::on_pushButtonHighPriority_clicked()
+{
+    ui->THighPriority->model()->insertRow(ui->THighPriority->model()->rowCount(QModelIndex()));
 }

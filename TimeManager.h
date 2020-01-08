@@ -102,6 +102,6 @@ public:
     int    GetReqCountInSystem() const;
 
 
-	bool TimeEquivalently(double l, double r) const;
+    static bool TimeEquivalently(double l, double r);
 };
 

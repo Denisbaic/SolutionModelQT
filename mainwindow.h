@@ -35,6 +35,10 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButtonLowPriority_clicked();
+
+    void on_pushButtonHighPriority_clicked();
+
 private:
 
     void AddRowToTableFromDeq(class QStandardItemModel* model, std::deque<Request>* deq);

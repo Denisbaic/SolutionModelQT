@@ -413,6 +413,7 @@ int TimeManager::GetReqCountInSystem() const
         if(GroupOfWorkers[i].ReqPriority!=-1)
             TempCount++;
     }
+
     /*
     if(w1.ReqPriority!=-1)
         TempCount++;
@@ -452,7 +453,7 @@ void TimeManager::SetGraphicsDataExpDensityService()
             ExpRaspDensityService.push_back(AverageServiceTime*std::pow(2.71828,-AverageServiceTime*i));
 }
 
-bool TimeManager::TimeEquivalently(double l, double r) const
+bool TimeManager::TimeEquivalently(double l, double r)
 {
     return std::abs(r - l) < 0.001f;
 }
