@@ -18,8 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
     QStandardItemModel *model = new QStandardItemModel;
     //Заголовки столбцов
     QStringList horizontalHeader;
+    horizontalHeader.append("Приоритет");
     horizontalHeader.append("Вероятность");
-
     model->setHorizontalHeaderLabels(horizontalHeader);
 
     ui->TLowPriority->setModel(model);
