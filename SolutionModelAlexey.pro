@@ -18,7 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Event.cpp \
     Generator.cpp \
-    Priority.cpp \
     Request.cpp \
     TimeManager.cpp \
     Worker.cpp \
@@ -29,7 +28,6 @@ SOURCES += \
 HEADERS += \
     Event.h \
     Generator.h \
-    Priority.h \
     Request.h \
     TimeManager.h \
     Worker.h \

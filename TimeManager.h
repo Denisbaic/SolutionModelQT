@@ -17,17 +17,13 @@ class TimeManager
 
 	Worker* FindFreeWorker();
 	Worker* FindWorkerWithLowPriority();
-    //void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
     void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority, bool isReqAbsolute);
-    //void    UseBusyWorkerWithNewReq(Worker* w);
     void    UseBusyWorkerWithNewReq(Worker* w,int ReqPriority, bool isReqAbsolute);
 
-    //void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, int ReqPriority);
+
     void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
-    //void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq);
     void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
 
-    //bool    TryToPushReqWithHighPriority();
     bool    TryToPushReqWithHighPriority(int ReqPriority);
 
     int     FindLowestReq(std::deque<Request>& ReqDeq);
@@ -45,8 +41,8 @@ public:
 
     std::deque<Request> ReqFailed;
     ////GRAPHIC DATA///
-    QVector<double> ExpRaspAdmission; //QVector<double> ExpTimeA;
-    QVector<double> ExpRaspService;   //QVector<double> ExpTimeS;
+    QVector<double> ExpRaspAdmission;
+    QVector<double> ExpRaspService;
 
     QVector<double> ExpRaspDensityService;
     QVector<double> ExpRaspDensityAdmission;
@@ -74,10 +70,7 @@ public:
 
     Worker* GroupOfWorkers;
 
-    //int CountOfLowPriority;
-    //class Priority* LowPriorityArr;
     QMap<int,QPair<double,double>> LowPriorityArr;
-    //int CountOfHighPriority;
     QMap<int,QPair<double,double>> HighPriorityArr;
 
 	double CurrentTime = 0.f;
@@ -87,8 +80,6 @@ public:
 	void RequestInWork();
 	void CheckReqContainer();
 	Event MoveTime();
-
-	Worker* FindWorkerByTime(double Time);
 
 	//коэффициент использования системы 
 	double GetSystemUtilizationP() const;
@@ -115,9 +106,6 @@ public:
 
 	int	   GetReqCountInDeq() const;
     int    GetReqCountInSystem() const;
-
-    //void   SetPriorityProbability();
-    //std::pair<double,double> GetPriorityProbability(int Priority, bool isRequestAbsolute);
 
     static bool TimeEquivalently(double l, double r);
 };

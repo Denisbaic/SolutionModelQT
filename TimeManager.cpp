@@ -1,7 +1,6 @@
 #include "TimeManager.h"
 #include <cmath>
 #include <iostream>
-#include "Priority.h"
 #include <time.h>
 #include <cassert>
 #include <QMessageBox>
@@ -15,14 +14,11 @@ TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceT
 	srand(time(NULL));
     CountOfWorkers=WorkersCount;
     GroupOfWorkers=new Worker[WorkersCount];
-    //CountOfPriority=_CountOfPriority;
-    //PriorityArr=new Priority[CountOfPriority];
 }
 
 TimeManager::~TimeManager()
 {
-    delete[] GroupOfWorkers;
-    //delete[] PriorityArr;
+    delete[] GroupOfWorkers;    
 }
 
 void TimeManager::AddNextReqBeforeSomeTime()
@@ -30,10 +26,7 @@ void TimeManager::AddNextReqBeforeSomeTime()
 	ReqAdded++;
     auto TempTime=Exponential_rasp(AverageReqAdmissionTime);
     TimeHandle.insert(Event(EventDestination::NewReqest, TempTime + CurrentTime));
-    //////���� ����������//////////
-    //ExpRaspAdmission.push_back(TempTime);
-    //ExpTimeA.push_back(CurrentTime);
-    ///////////////////////////////
+
 }
 
 Worker* TimeManager::FindFreeWorker()
@@ -43,28 +36,7 @@ Worker* TimeManager::FindFreeWorker()
             return &GroupOfWorkers[i];
         }
     }
-    /*
-    if(w1.ReqPriority==-1)
-	{
-		return &w1;
-	}
-	if(w2.ReqPriority==-1)
-	{
-		return &w2;
-	}
-	if (w3.ReqPriority == -1)
-	{
-		return &w3;
-	}
-	if (w4.ReqPriority == -1)
-	{
-		return &w4;
-	}
-	if (w5.ReqPriority == -1)
-	{
-		return &w5;
-	}
-    */
+
 	return nullptr;
 }
 
@@ -77,18 +49,7 @@ Worker* TimeManager::FindWorkerWithLowPriority()
     }
 	return nullptr;
 }
-//Deprecated
-//void TimeManager::UseFreeWorkerWithNewReq(Worker* w, int ReqPriority)
-//{
-//	const double TimeTemp = Exponential_rasp(AverageServiceTime);
 
-//	w->wf = TimeTemp + CurrentTime;
-//	w->TimeInWork += TimeTemp;
-//    w->ReqState = ReqPriority;
-//	w->_event = Event(EventDestination::SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
-
-//    TimeHandle.insert(w->_event);
-//}
 
 //New
 void TimeManager::UseFreeWorkerWithNewReq(Worker *w, int ReqPriority, bool isReqAbsolute)
@@ -105,30 +66,7 @@ void TimeManager::UseFreeWorkerWithNewReq(Worker *w, int ReqPriority, bool isReq
     TimeHandle.insert(w->_event);
 }
 
-//Deprecated
-//void TimeManager::UseBusyWorkerWithNewReq(Worker* w)
-//{
-//	if(GetReqCountInDeq()>=Limit)
-//	{
-//		const Request TempReq= *ReqDeqPriority2.rbegin();
-//		ReqDeqPriority2.pop_back();
-//		ReqFailed.push_back(TempReq);
-//	}
-//	ReqDeqPriority2.push_front(w->_event.req);
-//	TimeHandle.erase(w->_event);
-//	w->TimeInWork -= w->wf - CurrentTime;
 
-//	const double TimeTemp = Exponential_rasp(AverageServiceTime);
-
-//    //////���� ����������//////////
-//    //ExpRaspService.push_back(TimeTemp);
-//    ///////////////////////////////
-//	w->wf = TimeTemp + CurrentTime;
-//	w->TimeInWork += TimeTemp;
-//	w->_event = Event(SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
-//    w->ReqState = 1;
-//    TimeHandle.insert(w->_event);
-//}
 //New
 void TimeManager::UseBusyWorkerWithNewReq(Worker *w, int ReqPriority, bool isReqAbsolute)
 {
@@ -201,20 +139,6 @@ void TimeManager::UseBusyWorkerWithNewReq(Worker *w, int ReqPriority, bool isReq
     TimeHandle.insert(w->_event);
 }
 
-//Deprecated
-//void TimeManager::UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq,int ReqPriority)
-//{
-//	auto ReqFromDeq = *ReqDeq->begin();
-//	ReqFromDeq.WorkBeginTime = CurrentTime;
-//	ReqDeq->pop_front();
-
-//	w->wf = ReqFromDeq.WorkTime + CurrentTime;
-//    w->ReqState = ReqPriority;
-//	w->TimeInWork += ReqFromDeq.WorkTime;
-	
-//	w->_event = Event(SomeRequestTimeEnd, w->wf, w, ReqFromDeq);
-//    TimeHandle.insert(w->_event);
-//}
 
 void TimeManager::UseFreeWorkerWithReqFromDeq(Worker *w, std::deque<Request> *ReqDeq, bool isReqAbsolute)
 {
@@ -239,41 +163,6 @@ void TimeManager::UseFreeWorkerWithReqFromDeq(Worker *w, std::deque<Request> *Re
     TimeHandle.insert(w->_event);
 }
 
-//void TimeManager::UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq)
-//{
-//	ReqDeqPriority2.push_front(w->_event.req);
-//	TimeHandle.erase(w->_event);
-//	w->TimeInWork -= w->wf - CurrentTime;
-
-//	auto ReqFromDeq = *ReqDeq->begin();
-//	ReqFromDeq.WorkBeginTime = CurrentTime;
-//	ReqDeq->pop_front();
-
-//	w->wf = ReqFromDeq.WorkTime + CurrentTime;
-//    w->ReqState = 1;
-//	w->TimeInWork += ReqFromDeq.WorkTime;
-
-//	w->_event = Event(SomeRequestTimeEnd, w->wf, w, ReqFromDeq);
-//    TimeHandle.insert(w->_event);
-//}
-
-void TimeManager::UseBusyWorkerWithReqFromDeq(Worker *w, std::deque<Request> *ReqDeq, bool isReqAbsolute)
-{
-
-}
-
-//Deprecated
-//bool TimeManager::TryToPushReqWithHighPriority()
-//{
-//	if(ReqDeqPriority2.empty())
-//		return false;
-//	ReqFailed.push_back(*ReqDeqPriority2.rbegin());
-//	ReqDeqPriority2.pop_back();
-
-
-//	ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, CurrentTime, 0.0);
-//    return true;
-//}
 
 //New
 bool TimeManager::TryToPushReqWithHighPriority(int ReqPriority)
@@ -359,7 +248,6 @@ Worker *TimeManager::FindLowestPriorityWorker(bool isReqAbsolute)
 
 void TimeManager::RequestInWork()
 {
-    //const int requestPriority = GetPriorityForRequest();
     const bool requestType=GetTypeForRequest();
     const int  requestPriority=GetPriorityForRequest(requestType);
 
@@ -389,28 +277,7 @@ void TimeManager::RequestInWork()
                             ReqDeqPriority1.push_back(Request(0.0,requestPriority, true,CurrentTime,CurrentTime,CurrentTime));
                         }
                     }
-
                 }
-                /*
-                //����� ��������� � �� ���������� �����������
-                //���� ������
-                    //�������� ��� ������ �� ����������
-                    //������ ������ � �����
-                //���� �� ������
-                    //����� ���������� ��������� ��������� � �������� � ����������� ����� ������
-                    //���� ��� ��������� ������
-                        //�������� ������ �� ����, ��������� �����
-                            //����� �� ���������, ����� ����� ������ � ���������� �����������
-                            //����� ���������, ��������� ������ � ������ �����������
-                                //���� �����, ������ � ����� ������ � ���������� �����������
-                                //���� �� �����, ���������� ������ � ���������� ���������� ����������� ��� ���� ������
-                    //���� ��� ��������� ������
-                        //��������� �����
-                            //����� �� ���������, ����� ����� ������ � ���������� �����������
-                            //����� ���������, ��������� ������ � ������ �����������
-                                //���� �����, ������ � ����� ������ � ���������� �����������
-                                //���� �� �����, ���������� ������ � ���������� ���������� ����������� ��� ���� ������
-                  */
             }
         }
         else{
@@ -575,16 +442,6 @@ Event TimeManager::MoveTime()
 	return TempEvent;
 }
 
-Worker* TimeManager::FindWorkerByTime(double Time)
-{
-    //if (TimeEquivalently(w1.wf, Time))
-        //return &w1;
-    //if (TimeEquivalently(w2.wf, Time))
-        //return &w2;
-
-	return nullptr;
-}
-
 double TimeManager::GetSystemUtilizationP() const
 {
     if(CurrentTime==0)
@@ -652,7 +509,7 @@ bool TimeManager::GetTypeForRequest()
 	double GeneratedValue = PriorityGenerator.next();
 
 	GeneratedValue = GeneratedValue / RAND_MAX;
-    if (GeneratedValue > TypeRequestBound)
+    if (GeneratedValue < TypeRequestBound)
         return true;
     return false;
 }
@@ -663,10 +520,10 @@ int TimeManager::GetPriorityForRequest(bool isRequestAbsolute){
 
     GeneratedValue = GeneratedValue / RAND_MAX;
     if(isRequestAbsolute){
-        FindPriorityInMap(HighPriorityArr,GeneratedValue);
+        return FindPriorityInMap(HighPriorityArr,GeneratedValue);
     }
     else{
-        FindPriorityInMap(LowPriorityArr,GeneratedValue);
+        return FindPriorityInMap(LowPriorityArr,GeneratedValue);
     }
 }
 
@@ -694,18 +551,6 @@ int TimeManager::GetReqCountInSystem() const
             TempCount++;
     }
 
-    /*
-    if(w1.ReqPriority!=-1)
-        TempCount++;
-    if(w2.ReqPriority!=-1)
-        TempCount++;
-    if(w3.ReqPriority!=-1)
-        TempCount++;
-    if(w4.ReqPriority!=-1)
-        TempCount++;
-    if(w5.ReqPriority!=-1)
-        TempCount++;
-     */
     return TempCount;
 }
 

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QLCDNumber>
 #include "qcustomplot.h"
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -141,10 +142,6 @@ void MainWindow::ShowFailedReqTable(TimeManager* time_manager)
 void MainWindow::DrawRequestBars(TimeManager *time_manager)
 {
     QCustomPlot *customPlot = ui->BarsRequests;
-    QVBoxLayout *vbox;
-    QPushButton *res;
-
-
 
     customPlot->clearGraphs();
     customPlot->clearItems();
@@ -204,9 +201,7 @@ void MainWindow::DrawRequestBars(TimeManager *time_manager)
         }
     }
 
-    //fossilData  << 0.86*10.5 << 0.83*5.5 << 0.84*5.5 << 0.52*5.8 << 0.89*5.2 << 0.90*4.2 << 0.67*11.2;
-    //nuclearData << 0.08*10.5 << 0.12*5.5 << 0.12*5.5 << 0.40*5.8 << 0.09*5.2 << 0.00*4.2 << 0.07*11.2;
-
+    qSort(ticks);
     fossil->setData(ticks, fossilData);
     nuclear->setData(ticks, nuclearData);
 

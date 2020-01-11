@@ -2,12 +2,10 @@
 #include <deque>
 #include "Event.h"
 #include "Request.h"
-#include "Priority.h"
 
 class Worker
 {
 public:
-
 	double TimeInWork=0.f;
 	int ReqAcceptedCount=0;
 
@@ -16,6 +14,5 @@ public:
     int  ReqPriority=-1;
 	double wf = -1.0;
 
-    //Priority _ReqPriority;
 	static  std::deque<Request> ProcessedReqQueue;
 };
