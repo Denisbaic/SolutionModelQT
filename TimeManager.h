@@ -17,17 +17,17 @@ class TimeManager
 
 	Worker* FindFreeWorker();
 	Worker* FindWorkerWithLowPriority();
-    void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
+    //void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
     void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority, bool isReqAbsolute);
-    void    UseBusyWorkerWithNewReq(Worker* w);
+    //void    UseBusyWorkerWithNewReq(Worker* w);
     void    UseBusyWorkerWithNewReq(Worker* w,int ReqPriority, bool isReqAbsolute);
 
-    void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, int ReqPriority);
+    //void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, int ReqPriority);
     void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
-    void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq);
+    //void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq);
     void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
 
-    bool    TryToPushReqWithHighPriority();
+    //bool    TryToPushReqWithHighPriority();
     bool    TryToPushReqWithHighPriority(int ReqPriority);
 
     int     FindLowestReq(std::deque<Request>& ReqDeq);
@@ -67,6 +67,8 @@ public:
     void SetGraphicsDataExpDensityService();
 
     //////////////
+
+    double TypeRequestBound=0.8;
 
     int CountOfWorkers;
 

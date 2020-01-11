@@ -21,6 +21,8 @@ public:
      void ShowProcessedReqTable();
      void ShowFailedReqTable(TimeManager* time_manager);
 
+     void DrawRequestBars(TimeManager* time_manager);
+
      void DrawGraphicNs(TimeManager* time_manager);
      void DrawGraphicNq(TimeManager* time_manager);
      void DrawGraphicReqInDeqPerFix(TimeManager* time_manager);
@@ -38,6 +40,10 @@ private slots:
     void on_pushButtonLowPriority_clicked();
 
     void on_pushButtonHighPriority_clicked();
+
+    void on_ScrollBarTypeRequestBound_rangeChanged(int min, int max);
+
+    void on_ScrollBarTypeRequestBound_valueChanged(int value);
 
 private:
 

@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -223,7 +223,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>600</x>
         <y>80</y>
-        <width>121</width>
+        <width>181</width>
         <height>192</height>
        </rect>
       </property>
@@ -237,7 +237,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButtonLowPriority">
       <property name="geometry">
        <rect>
-        <x>600</x>
+        <x>620</x>
         <y>40</y>
         <width>121</width>
         <height>31</height>
@@ -252,7 +252,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>850</x>
         <y>80</y>
-        <width>121</width>
+        <width>231</width>
         <height>192</height>
        </rect>
       </property>
@@ -260,7 +260,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="pushButtonHighPriority">
       <property name="geometry">
        <rect>
-        <x>850</x>
+        <x>900</x>
         <y>40</y>
         <width>121</width>
         <height>31</height>
@@ -268,6 +268,35 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Добавить приоритет</string>
+      </property>
+     </widget>
+     <widget class="QScrollBar" name="ScrollBarTypeRequestBound">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>350</y>
+        <width>160</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <number>1000</number>
+      </property>
+      <property name="singleStep">
+       <number>1</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLCDNumber" name="LCDTypeRequestBound">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>300</y>
+        <width>64</width>
+        <height>23</height>
+       </rect>
       </property>
      </widget>
     </widget>
@@ -538,7 +567,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -638,6 +667,16 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Информация о рабочих</string>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="BarsRequests" native="true">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>20</y>
+        <width>451</width>
+        <height>311</height>
+       </rect>
       </property>
      </widget>
     </widget>

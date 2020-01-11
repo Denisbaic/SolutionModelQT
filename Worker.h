@@ -13,7 +13,7 @@ public:
 
 	Event _event;
     int  ReqState  =-1;
-    int  ReqPriority=1;
+    int  ReqPriority=-1;
 	double wf = -1.0;
 
     //Priority _ReqPriority;

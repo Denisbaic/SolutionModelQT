@@ -4,6 +4,8 @@
 #include "QStandardItemModel"
 #include "QStandardItem"
 #include <iostream>
+#include <QLCDNumber>
+#include "qcustomplot.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -134,6 +136,93 @@ void MainWindow::ShowFailedReqTable(TimeManager* time_manager)
 
     ui->tableFailedRequests->resizeRowsToContents();
     ui->tableFailedRequests->resizeColumnsToContents();
+}
+
+void MainWindow::DrawRequestBars(TimeManager *time_manager)
+{
+    QCustomPlot *customPlot = ui->BarsRequests;
+    QVBoxLayout *vbox;
+    QPushButton *res;
+
+
+
+    customPlot->clearGraphs();
+    customPlot->clearItems();
+    customPlot->clearPlottables();
+    // create empty bar chart objects:
+
+    QCPBars *nuclear = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+    QCPBars *fossil = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+
+    nuclear->setAntialiased(false);
+    fossil->setAntialiased(false);
+
+    nuclear->setStackingGap(1);
+    fossil->setStackingGap(1);
+    // set names and colors:
+    fossil->setName("Заявки с абсолютным приоритетом");
+    fossil->setPen(QPen(QColor(111, 9, 176).lighter(170)));
+    fossil->setBrush(QColor(111, 9, 176));
+    nuclear->setName("Заявки с относительным приоритетом");
+    nuclear->setPen(QPen(QColor(250, 170, 20).lighter(150)));
+    nuclear->setBrush(QColor(250, 170, 20));
+
+    // stack bars on top of each other:
+    nuclear->moveAbove(fossil);
+
+
+    QSet<int> _tiks;
+    for(auto& elem : time_manager->HighPriorityArr.keys()){
+        _tiks.insert(elem);
+    }
+    for(auto& elem : time_manager->LowPriorityArr.keys()){
+        _tiks.insert(elem);
+    }
+    // prepare x axis with country labels:
+
+    QVector<double> ticks;
+    QVector<QString> labels;
+    for(auto elem: _tiks){
+        ticks.append(elem);
+        labels.append(QString::number(elem));
+
+    }
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+
+
+    // Add data:
+
+    QSet<int>::iterator max = std::max_element(_tiks.begin(), _tiks.end());
+    QVector<double> fossilData(*max), nuclearData(*max);
+
+    for(int i=0; i< Worker::ProcessedReqQueue.size(); ++i){
+        if(Worker::ProcessedReqQueue[i].isReqAbsolute){
+            fossilData[Worker::ProcessedReqQueue[i].ReqPriority-1]++;
+        }else{
+            nuclearData[Worker::ProcessedReqQueue[i].ReqPriority-1]++;
+        }
+    }
+
+    //fossilData  << 0.86*10.5 << 0.83*5.5 << 0.84*5.5 << 0.52*5.8 << 0.89*5.2 << 0.90*4.2 << 0.67*11.2;
+    //nuclearData << 0.08*10.5 << 0.12*5.5 << 0.12*5.5 << 0.40*5.8 << 0.09*5.2 << 0.00*4.2 << 0.07*11.2;
+
+    fossil->setData(ticks, fossilData);
+    nuclear->setData(ticks, nuclearData);
+
+    // setup legend:
+    customPlot->legend->setVisible(true);
+    customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignHCenter);
+    customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+    customPlot->legend->setBorderPen(Qt::NoPen);
+    QFont legendFont = font();
+    legendFont.setPointSize(10);
+    customPlot->legend->setFont(legendFont);
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
+    customPlot->xAxis->setRange(0, *max+1);
+    customPlot->yAxis->setRange(0, time_manager->ReqNeed);
+    customPlot->replot();
 }
 
 void MainWindow::DrawGraphicNs(TimeManager *time_manager)
@@ -336,6 +425,9 @@ void MainWindow::on_pushButton_clicked()
     }
     TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
+    time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
+    time_manager.HighPriorityArr={{2,{0.0,0.1}},{3,{0.1,0.2}},{4,{0.2,0.8}},{5,{0.8,1.0}}};
+    time_manager.TypeRequestBound=ui->LCDTypeRequestBound->value();
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();
 
@@ -373,6 +465,8 @@ void MainWindow::on_pushButton_clicked()
         ui->TBNs->setText(QString::number(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs()));
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
         ui->TBCr->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCr()));
+
+        DrawRequestBars(&time_manager);
 
         DrawGraphicReqInDeqPerFix(&time_manager);
         DrawGraphicReqInSystemPerFix(&time_manager);
@@ -424,4 +518,14 @@ void MainWindow::on_pushButtonLowPriority_clicked()
 void MainWindow::on_pushButtonHighPriority_clicked()
 {
     ui->THighPriority->model()->insertRow(ui->THighPriority->model()->rowCount(QModelIndex()));
+}
+
+void MainWindow::on_ScrollBarTypeRequestBound_valueChanged(int value)
+{    
+    ui->LCDTypeRequestBound->display(double(value)/1000);
+}
+
+void MainWindow::on_ScrollBarTypeRequestBound_rangeChanged(int min, int max)
+{
+
 }
