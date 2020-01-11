@@ -18,5 +18,6 @@ public:
 	Event(EventDestination event_destination, double time);
 	Event();
 	bool operator<(Event const  & R) const;
+    bool operator==(Event const& R);
 };
 

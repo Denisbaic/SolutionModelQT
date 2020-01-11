@@ -26,6 +26,11 @@ Event::Event(): event_destination(), time(0), workerPtr(nullptr)
 
 bool Event::operator<( Event const& R) const
 {
-	return  this->time< R.time;
+    return  this->time< R.time;
+}
+
+bool Event::operator==(const Event &R)
+{
+    return this->workerPtr==R.workerPtr && this->event_destination==R.event_destination;
 }
 

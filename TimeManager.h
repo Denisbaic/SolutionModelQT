@@ -5,6 +5,9 @@
 #include "Worker.h"
 #include <QPair>
 #include <QVector>
+#include <QMap>
+#include <QPair>
+
 class TimeManager
 {
 	Generator PriorityGenerator;
@@ -14,16 +17,24 @@ class TimeManager
 
 	Worker* FindFreeWorker();
 	Worker* FindWorkerWithLowPriority();
-	void UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
-	void UseBusyWorkerWithNewReq(Worker* w);
+    void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority);
+    void    UseFreeWorkerWithNewReq(Worker* w, int ReqPriority, bool isReqAbsolute);
+    void    UseBusyWorkerWithNewReq(Worker* w);
+    void    UseBusyWorkerWithNewReq(Worker* w,int ReqPriority, bool isReqAbsolute);
 
-	void UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, int ReqPriority);
-	void UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq);
+    void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, int ReqPriority);
+    void    UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
+    void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq);
+    void    UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq, bool isReqAbsolute);
 
-	bool TryToPushReqWithHighPriority();
+    bool    TryToPushReqWithHighPriority();
+    bool    TryToPushReqWithHighPriority(int ReqPriority);
 
+    int     FindLowestReq(std::deque<Request>& ReqDeq);
+    int     FindHighestReq(std::deque<Request>& ReqDeq);
+    Worker* FindLowestPriorityWorker(bool isReqAbsolute);
 public:
-    TimeManager(int req_need,int WorkersCount,int _CountOfPriority, double _AverageServiceTime, double _AverageReqAdmissionTime);
+    TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime);
     ~TimeManager();
     double AverageServiceTime;
 	double AverageReqAdmissionTime;
@@ -58,16 +69,14 @@ public:
     //////////////
 
     int CountOfWorkers;
-	Worker w1;
-	Worker w2;
-	Worker w3;
-	Worker w4;
-	Worker w5;
 
     Worker* GroupOfWorkers;
 
-    int CountOfPriority;
-    class Priority* PriorityArr;
+    //int CountOfLowPriority;
+    //class Priority* LowPriorityArr;
+    QMap<int,QPair<double,double>> LowPriorityArr;
+    //int CountOfHighPriority;
+    QMap<int,QPair<double,double>> HighPriorityArr;
 
 	double CurrentTime = 0.f;
 
@@ -96,13 +105,17 @@ public:
 
 	//генератор случайных чисел
 	double Exponential_rasp(double med) const;
-	//1-высокий приоритет
-	//2-низкий приоритет
-	int	   GetPriorityForRequest();
+    //true-высокий приоритет
+    //false-низкий приоритет
+    bool   GetTypeForRequest();
+    int    GetPriorityForRequest(bool isRequestAbsolute);
+    int    FindPriorityInMap(QMap<int, QPair<double,double>>& PriorityMap, double Priority);
+
 	int	   GetReqCountInDeq() const;
     int    GetReqCountInSystem() const;
-    void   SetPriorityProbability();
-    std::pair<double,double> GetPriorityProbability(int Priority);
+
+    //void   SetPriorityProbability();
+    //std::pair<double,double> GetPriorityProbability(int Priority, bool isRequestAbsolute);
 
     static bool TimeEquivalently(double l, double r);
 };

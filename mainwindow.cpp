@@ -334,7 +334,7 @@ void MainWindow::on_pushButton_clicked()
     if(sum>=1.0 && !TimeManager::TimeEquivalently(sum,1.0)){
         return;
     }
-    TimeManager time_manager(ReqNeed, WorkerCount,2, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+    TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();
@@ -352,6 +352,7 @@ void MainWindow::on_pushButton_clicked()
             {
                 event_.workerPtr->ReqAcceptedCount++;
                 event_.req.ExitTime = time_manager.CurrentTime;
+                event_.workerPtr->ReqState = -1;
                 event_.workerPtr->ReqPriority = -1;
 
                 Worker::ProcessedReqQueue.push_back(event_.req);

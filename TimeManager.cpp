@@ -4,7 +4,8 @@
 #include "Priority.h"
 #include <time.h>
 #include <cassert>
-TimeManager::TimeManager(int req_need,int WorkersCount,int _CountOfPriority,  double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
+#include <QMessageBox>
+TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
                                                                                                 AverageServiceTime(_AverageServiceTime),
                                                                                                 AverageReqAdmissionTime(_AverageReqAdmissionTime),
                                                                                                 ReqAdded(0),
@@ -14,14 +15,14 @@ TimeManager::TimeManager(int req_need,int WorkersCount,int _CountOfPriority,  do
 	srand(time(NULL));
     CountOfWorkers=WorkersCount;
     GroupOfWorkers=new Worker[WorkersCount];
-    CountOfPriority=_CountOfPriority;
-    PriorityArr=new Priority[CountOfPriority];
+    //CountOfPriority=_CountOfPriority;
+    //PriorityArr=new Priority[CountOfPriority];
 }
 
 TimeManager::~TimeManager()
 {
     delete[] GroupOfWorkers;
-    delete[] PriorityArr;
+    //delete[] PriorityArr;
 }
 
 void TimeManager::AddNextReqBeforeSomeTime()
@@ -29,7 +30,7 @@ void TimeManager::AddNextReqBeforeSomeTime()
 	ReqAdded++;
     auto TempTime=Exponential_rasp(AverageReqAdmissionTime);
     TimeHandle.insert(Event(EventDestination::NewReqest, TempTime + CurrentTime));
-    //////Сбор статистики//////////
+    //////пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ//////////
     //ExpRaspAdmission.push_back(TempTime);
     //ExpTimeA.push_back(CurrentTime);
     ///////////////////////////////
@@ -38,7 +39,7 @@ void TimeManager::AddNextReqBeforeSomeTime()
 Worker* TimeManager::FindFreeWorker()
 {
     for(int i=0;i<CountOfWorkers;i++){
-        if(GroupOfWorkers[i].ReqPriority==-1){
+        if(GroupOfWorkers[i].ReqState==-1){
             return &GroupOfWorkers[i];
         }
     }
@@ -70,50 +71,41 @@ Worker* TimeManager::FindFreeWorker()
 Worker* TimeManager::FindWorkerWithLowPriority()
 {
     for(int i=0;i<CountOfWorkers;i++){
-        if(GroupOfWorkers[i].ReqPriority==2){
+        if(GroupOfWorkers[i].ReqState==2){
             return &GroupOfWorkers[i];
         }
     }
-    /*
-	if (w1.ReqPriority == 2)
-	{
-		return &w1;
-	}
-	if (w2.ReqPriority == 2)
-	{
-		return &w2;
-	}
-	if (w3.ReqPriority == 2)
-	{
-		return &w3;
-	}
-	if (w4.ReqPriority == 2)
-	{
-		return &w4;
-	}
-	if (w5.ReqPriority == 2)
-	{
-		return &w5;
-	}
-    */
 	return nullptr;
 }
-
+//Deprecated
 void TimeManager::UseFreeWorkerWithNewReq(Worker* w, int ReqPriority)
 {
 	const double TimeTemp = Exponential_rasp(AverageServiceTime);
-    //////Сбор статистики//////////
-    //ExpRaspService.push_back(TimeTemp);
-    //ExpTimeS.push_back(CurrentTime);
-    ///////////////////////////////
+
 	w->wf = TimeTemp + CurrentTime;
 	w->TimeInWork += TimeTemp;
-	w->ReqPriority = ReqPriority;
+    w->ReqState = ReqPriority;
 	w->_event = Event(EventDestination::SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
 
-	TimeHandle.insert(w->_event);
+    TimeHandle.insert(w->_event);
 }
 
+//New
+void TimeManager::UseFreeWorkerWithNewReq(Worker *w, int ReqPriority, bool isReqAbsolute)
+{
+    const double TimeTemp = Exponential_rasp(AverageServiceTime);
+    w->wf = TimeTemp + CurrentTime;
+    w->TimeInWork += TimeTemp;
+    w->ReqState = isReqAbsolute ? 1 : 2;
+    //w->_ReqPriority.absolutePriority=isReqAbsolute;
+    w->ReqPriority=ReqPriority;
+
+    w->_event = Event(EventDestination::SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
+
+    TimeHandle.insert(w->_event);
+}
+
+//Deprecated
 void TimeManager::UseBusyWorkerWithNewReq(Worker* w)
 {
 	if(GetReqCountInDeq()>=Limit)
@@ -128,16 +120,87 @@ void TimeManager::UseBusyWorkerWithNewReq(Worker* w)
 
 	const double TimeTemp = Exponential_rasp(AverageServiceTime);
 
-    //////Сбор статистики//////////
+    //////пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ//////////
     //ExpRaspService.push_back(TimeTemp);
     ///////////////////////////////
 	w->wf = TimeTemp + CurrentTime;
 	w->TimeInWork += TimeTemp;
 	w->_event = Event(SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, CurrentTime,CurrentTime, 0));
-	w->ReqPriority = 1;
-	TimeHandle.insert(w->_event);
+    w->ReqState = 1;
+    TimeHandle.insert(w->_event);
+}
+//New
+void TimeManager::UseBusyWorkerWithNewReq(Worker *w, int ReqPriority, bool isReqAbsolute)
+{
+    if(w->ReqState==1 && isReqAbsolute){
+        if(GetReqCountInDeq()>=Limit)
+        {
+            if(!ReqDeqPriority2.empty()){
+                ReqDeqPriority2[FindLowestReq(ReqDeqPriority2)].ExitTime=CurrentTime;
+
+                ReqFailed.push_back(ReqDeqPriority2[FindLowestReq(ReqDeqPriority2)]);
+                ReqDeqPriority2.erase(ReqDeqPriority2.begin()+FindLowestReq(ReqDeqPriority2));
+
+            }
+            else{
+                if(ReqDeqPriority1[FindLowestReq(ReqDeqPriority1)].ReqPriority>w->ReqPriority){
+                    w->_event.req.ExitTime=CurrentTime;
+                    ReqFailed.push_back(w->_event.req);
+                }else{
+                    ReqDeqPriority1[FindLowestReq(ReqDeqPriority1)].ExitTime=CurrentTime;
+                    ReqDeqPriority1.erase(ReqDeqPriority1.begin()+FindLowestReq(ReqDeqPriority1));
+                    ReqFailed.push_back(ReqDeqPriority1[FindLowestReq(ReqDeqPriority1)]);
+
+                    ReqDeqPriority1.push_back( w->_event.req);
+                }
+            }
+        }
+        else{
+            ReqDeqPriority1.push_back( w->_event.req);
+        }
+    }
+    else if(w->ReqState==2 && isReqAbsolute){
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        ReqFailed.push_back(w->_event.req);
+    }
+    else if(w->ReqState==2 && !isReqAbsolute){
+        if(GetReqCountInDeq()>=Limit)
+        {
+            if(ReqDeqPriority2[FindLowestReq(ReqDeqPriority2)].ReqPriority<ReqPriority){
+                ReqFailed.push_back(ReqDeqPriority2[FindLowestReq(ReqDeqPriority2)]);
+                ReqDeqPriority2.erase(ReqDeqPriority2.begin()+FindLowestReq(ReqDeqPriority2));
+
+                ReqDeqPriority2.push_back( w->_event.req);
+            }
+            else{
+                w->_event.req.ExitTime=CurrentTime;
+                ReqFailed.push_back(w->_event.req);
+            }
+        }else{
+            ReqDeqPriority2.push_back(w->_event.req);
+        }
+    }
+    else if(w->ReqState==1 && !isReqAbsolute){
+        QMessageBox msgBox;
+        msgBox.setText("Something is wrong. Func UseBusyWorkerWithNewReq try to change state from absolute to non absolute.");
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+
+    }
+
+    TimeHandle.erase(w->_event);
+    w->TimeInWork -= w->wf - CurrentTime;
+    const double TimeTemp = Exponential_rasp(AverageServiceTime);
+    w->wf = TimeTemp + CurrentTime;
+    w->TimeInWork += TimeTemp;
+    w->_event = Event(SomeRequestTimeEnd, w->wf, w, Request(TimeTemp, ReqPriority, CurrentTime,CurrentTime, 0));
+    w->ReqState = isReqAbsolute ? 1 : 2;
+    w->ReqPriority=ReqPriority;
+
+    TimeHandle.insert(w->_event);
 }
 
+//Deprecated
 void TimeManager::UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq,int ReqPriority)
 {
 	auto ReqFromDeq = *ReqDeq->begin();
@@ -145,11 +208,34 @@ void TimeManager::UseFreeWorkerWithReqFromDeq(Worker* w, std::deque<Request>* Re
 	ReqDeq->pop_front();
 
 	w->wf = ReqFromDeq.WorkTime + CurrentTime;
-	w->ReqPriority = ReqPriority;
+    w->ReqState = ReqPriority;
 	w->TimeInWork += ReqFromDeq.WorkTime;
 	
 	w->_event = Event(SomeRequestTimeEnd, w->wf, w, ReqFromDeq);
-	TimeHandle.insert(w->_event);
+    TimeHandle.insert(w->_event);
+}
+
+void TimeManager::UseFreeWorkerWithReqFromDeq(Worker *w, std::deque<Request> *ReqDeq, bool isReqAbsolute)
+{
+    Request ReqFromDeq;
+    if(!isReqAbsolute){
+        ReqFromDeq = *ReqDeq->begin();
+        ReqFromDeq.WorkBeginTime = CurrentTime;
+        ReqDeq->pop_front();
+    }
+    else{
+        int TempIndex=FindHighestReq(*ReqDeq);
+        ReqFromDeq=*(ReqDeq->begin()+TempIndex);
+        ReqDeq->erase(ReqDeq->begin()+TempIndex);
+    }
+
+    w->wf = ReqFromDeq.WorkTime + CurrentTime;
+    w->ReqState=isReqAbsolute ? 1 : 2;
+    w->ReqPriority = ReqFromDeq.ReqPriority;
+    w->TimeInWork += ReqFromDeq.WorkTime;
+
+    w->_event = Event(SomeRequestTimeEnd, w->wf, w, ReqFromDeq);
+    TimeHandle.insert(w->_event);
 }
 
 void TimeManager::UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* ReqDeq)
@@ -163,13 +249,19 @@ void TimeManager::UseBusyWorkerWithReqFromDeq(Worker* w, std::deque<Request>* Re
 	ReqDeq->pop_front();
 
 	w->wf = ReqFromDeq.WorkTime + CurrentTime;
-	w->ReqPriority = 1;
+    w->ReqState = 1;
 	w->TimeInWork += ReqFromDeq.WorkTime;
 
 	w->_event = Event(SomeRequestTimeEnd, w->wf, w, ReqFromDeq);
-	TimeHandle.insert(w->_event);
+    TimeHandle.insert(w->_event);
 }
 
+void TimeManager::UseBusyWorkerWithReqFromDeq(Worker *w, std::deque<Request> *ReqDeq, bool isReqAbsolute)
+{
+
+}
+
+//Deprecated
 bool TimeManager::TryToPushReqWithHighPriority()
 {
 	if(ReqDeqPriority2.empty())
@@ -179,80 +271,270 @@ bool TimeManager::TryToPushReqWithHighPriority()
 
 
 	ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, CurrentTime, 0.0);
-	return true;
+    return true;
+}
+
+//New
+bool TimeManager::TryToPushReqWithHighPriority(int ReqPriority)
+{
+    //TODO РІРѕР·РјРѕР¶РЅРѕ, СЃР»РµРґСѓРµС‚ СѓР±РёСЂР°С‚СЊ Р·Р°СЏРІРєСѓ СЃ СЃР°РјС‹Рј РЅРёР·РєРёРј Р°Р±СЃРѕР»СЋС‚РЅС‹Рј РїСЂРёРѕСЂРёС‚РµС‚РѕРј
+    if(ReqDeqPriority2.empty())
+        return false;
+    ReqFailed.push_back(*ReqDeqPriority2.rbegin());
+    ReqDeqPriority2.pop_back();
+
+
+    ReqDeqPriority1.push_back(Request(Exponential_rasp(AverageServiceTime), ReqPriority, 0.0, CurrentTime, 0.0));
+    return true;
+}
+
+int TimeManager::FindLowestReq(std::deque<Request> &ReqDeq)
+{
+    int i=0;
+    int iOut=0;
+    int MinReqPriority=-1;
+    for(auto& elem : ReqDeq){
+        if(MinReqPriority>elem.ReqPriority)
+         {
+            MinReqPriority=elem.ReqPriority;
+            iOut=i;
+         }
+        i+=1;
+    }
+    return iOut;
+}
+
+int TimeManager::FindHighestReq(std::deque<Request> &ReqDeq)
+{
+    int i=0;
+    int iOut=0;
+    int MaxReqPriority=-1;
+    for(auto& elem : ReqDeq){
+        if(MaxReqPriority<elem.ReqPriority)
+         {
+            MaxReqPriority=elem.ReqPriority;
+            iOut=i;
+         }
+        i+=1;
+    }
+    return iOut;
+}
+
+Worker *TimeManager::FindLowestPriorityWorker(bool isReqAbsolute)
+{
+    Worker* TempMin=nullptr;
+    if(isReqAbsolute){
+        for(int i=0; i<CountOfWorkers; ++i){
+            if(GroupOfWorkers[i].ReqState==1)
+            {
+                TempMin= &GroupOfWorkers[i];
+            }
+        }
+        for(int i=0; i<CountOfWorkers; ++i){
+            if(GroupOfWorkers[i].ReqState==1 && GroupOfWorkers[i].ReqPriority<TempMin->ReqPriority)
+            {
+                TempMin= &GroupOfWorkers[i];
+            }
+        }
+    }
+    else{
+        for(int i=0; i<CountOfWorkers; ++i){
+            if(GroupOfWorkers[i].ReqState==2)
+            {
+                TempMin= &GroupOfWorkers[i];
+            }
+        }
+        for(int i=0; i<CountOfWorkers; ++i){
+            if(GroupOfWorkers[i].ReqState==2 && GroupOfWorkers[i].ReqPriority<TempMin->ReqPriority)
+            {
+                TempMin= &GroupOfWorkers[i];
+            }
+        }
+    }
+    return TempMin;
 }
 
 void TimeManager::RequestInWork()
 {
-	const int requestPriority = GetPriorityForRequest();
+    //const int requestPriority = GetPriorityForRequest();
+    const bool requestType=GetTypeForRequest();
+    const int  requestPriority=GetPriorityForRequest(requestType);
 
-	if(requestPriority==1)
-	{
-		if(ReqDeqPriority1.empty())
-		{
-			Worker* WorkerPtr = FindFreeWorker();
-			if(WorkerPtr)
-			{
-				UseFreeWorkerWithNewReq(WorkerPtr, 1);
-			}
-			else
-			{
-				WorkerPtr = FindWorkerWithLowPriority();
-				if(WorkerPtr)
-				{
-					UseBusyWorkerWithNewReq(WorkerPtr);
-				}
-				else
-				{
-					ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0);
-				}
-			}
-		}
-		else
-		{
-			if (GetReqCountInDeq() >= Limit)
-			{
-				//bool ReqPushed = TryToPushReqWithHighPriority();
-				if(!TryToPushReqWithHighPriority())
-				{
-					ReqFailed.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
-				}
-			}
-			else
-			{
-				ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
-			}			
-		}
-	}
-	else
-	{
-		if(ReqDeqPriority2.empty())
-		{
-			Worker* WorkerPtr = FindFreeWorker();
-			if (WorkerPtr)
-			{
-				UseFreeWorkerWithNewReq(WorkerPtr, 2);
-			}
-			else
-			{
-				ReqDeqPriority2.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
-			}
-		}
-		else
-		{
-			if (GetReqCountInDeq() >= Limit)
-			{
-				ReqFailed.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
-			}
-			else
-			{
-				ReqDeqPriority2.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
-			}
+    if(requestType){
+        if(ReqDeqPriority1.empty()){
+            Worker* WorkerPtr = FindFreeWorker();
+            if(WorkerPtr)
+            {
+                UseFreeWorkerWithNewReq(WorkerPtr, requestPriority,true);
+            }
+            else{
+                WorkerPtr = FindWorkerWithLowPriority();
+                if(WorkerPtr){
+                    UseBusyWorkerWithNewReq(WorkerPtr,requestPriority,true);
+                }
+                else{
+                    WorkerPtr=FindLowestPriorityWorker(true);
+                    if(WorkerPtr->ReqPriority<requestPriority){
+                        UseBusyWorkerWithNewReq(WorkerPtr,requestPriority,true);
+                    }
+                    else{
+                        if (GetReqCountInDeq() >= Limit)
+                        {
+                            TryToPushReqWithHighPriority(requestPriority);
+                        }
+                        else{
+                            ReqDeqPriority1.push_back(Request(0.0,requestPriority,CurrentTime,CurrentTime,CurrentTime));
+                        }
+                    }
+
+                }
+                /*
+                //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+                //пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+                            //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                            //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                                //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                                //пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+                            //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                            //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                                //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                                //пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+                  */
+            }
+        }
+        else{
+            if (GetReqCountInDeq() >= Limit)
+            {
+                if(!TryToPushReqWithHighPriority(requestPriority))
+                {
+                    ReqFailed.push_back(Request(0.0, requestPriority,CurrentTime, CurrentTime, CurrentTime));
+                }
+            }
+            else
+            {
+                ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime),requestPriority,CurrentTime, CurrentTime, 0.0);
+            }
+            //TryToPushReqWithHighPriority(requestPriority);
+        }
+    }
+    else{
+        if(ReqDeqPriority2.empty())
+        {
+            Worker* WorkerPtr = FindFreeWorker();
+            if (WorkerPtr)
+            {
+                UseFreeWorkerWithNewReq(WorkerPtr, requestPriority,false);
+                //UseFreeWorkerWithNewReq(WorkerPtr, 2);
+            }
+            else
+            {
+                WorkerPtr=FindLowestPriorityWorker(false);
+                if(WorkerPtr && WorkerPtr->ReqPriority<requestPriority){
+                    UseBusyWorkerWithNewReq(WorkerPtr,requestPriority,false);
+                }
+                else{
+                    if (GetReqCountInDeq() >= Limit)
+                    {
+                        ReqFailed.push_back(Request(0.0, requestPriority, CurrentTime,CurrentTime, CurrentTime));
+                    }
+                    else
+                    {
+                        ReqDeqPriority2.push_back(Request(Exponential_rasp(AverageServiceTime),requestPriority,0.0, CurrentTime, 0.0));
+                    }
+                }
+            }
+        }
+        else
+        {
+            //TODO Make Swither
+            if (GetReqCountInDeq() >= Limit)
+            {
+                ReqFailed.push_back(Request(0.0,requestPriority,CurrentTime, CurrentTime, CurrentTime));
+            }
+            else
+            {
+                ReqDeqPriority2.push_back(Request(Exponential_rasp(AverageServiceTime), requestPriority,0.0,CurrentTime, 0.0));
+            }
+
+        }
+    }
+    //////////////////////////////////////////
+
+//    if(requestType)
+//	{
+//		if(ReqDeqPriority1.empty())
+//		{
+//			Worker* WorkerPtr = FindFreeWorker();
+//			if(WorkerPtr)
+//			{
+//				UseFreeWorkerWithNewReq(WorkerPtr, 1);
+//			}
+//			else
+//			{
+//				WorkerPtr = FindWorkerWithLowPriority();
+//				if(WorkerPtr)
+//				{
+//					UseBusyWorkerWithNewReq(WorkerPtr);
+//				}
+//				else
+//				{
+//					ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0);
+//				}
+//			}
+//		}
+//		else
+//		{
+//			if (GetReqCountInDeq() >= Limit)
+//			{
+//				//bool ReqPushed = TryToPushReqWithHighPriority();
+//				if(!TryToPushReqWithHighPriority())
+//				{
+//					ReqFailed.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
+//				}
+//			}
+//			else
+//			{
+//				ReqDeqPriority1.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		if(ReqDeqPriority2.empty())
+//		{
+//			Worker* WorkerPtr = FindFreeWorker();
+//			if (WorkerPtr)
+//			{
+//				UseFreeWorkerWithNewReq(WorkerPtr, 2);
+//			}
+//			else
+//			{
+//				ReqDeqPriority2.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
+//			}
+//		}
+//		else
+//		{
+//			if (GetReqCountInDeq() >= Limit)
+//			{
+//				ReqFailed.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
+//			}
+//			else
+//			{
+//				ReqDeqPriority2.emplace_back(Exponential_rasp(AverageServiceTime), CurrentTime, 0.0);
+//			}
 			
-		}
-	}
+//		}
+//	}
 
-	//задействовать все девайсы
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	CheckReqContainer();
 }
 
@@ -263,7 +545,7 @@ void TimeManager::CheckReqContainer()
 	workerPtr=FindFreeWorker();
 	while (!ReqDeqPriority1.empty() && workerPtr)
 	{
-		UseFreeWorkerWithReqFromDeq(workerPtr,&ReqDeqPriority1,1);
+        UseFreeWorkerWithReqFromDeq(workerPtr,&ReqDeqPriority1,true);
 		workerPtr = FindFreeWorker();
 	}
 	//check on low priority
@@ -271,15 +553,56 @@ void TimeManager::CheckReqContainer()
 	workerPtr = FindWorkerWithLowPriority();
 	while (!ReqDeqPriority1.empty() && workerPtr)
 	{
-		UseBusyWorkerWithReqFromDeq(workerPtr, &ReqDeqPriority1);
+        //UseBusyWorkerWithReqFromDeq(workerPtr, &ReqDeqPriority1, true);
+
+        ReqDeqPriority2.push_back(workerPtr->_event.req);
+        TimeHandle.erase(workerPtr->_event);
+        workerPtr->TimeInWork -= workerPtr->wf - CurrentTime;
+
+        //auto ReqFromDeq = *ReqDeqPriority1.begin();
+        Request ReqFromDeq=ReqDeqPriority1[FindHighestReq(ReqDeqPriority1)];
+        ReqFromDeq.WorkBeginTime = CurrentTime;
+        ReqDeqPriority1.erase(ReqDeqPriority1.begin()+FindHighestReq(ReqDeqPriority1));
+
+        workerPtr->wf = ReqFromDeq.WorkTime + CurrentTime;
+        workerPtr->ReqState = 1;
+        workerPtr->ReqPriority=ReqFromDeq.ReqPriority;
+        workerPtr->TimeInWork += ReqFromDeq.WorkTime;
+
+        workerPtr->_event = Event(SomeRequestTimeEnd, workerPtr->wf, workerPtr, ReqFromDeq);
+        TimeHandle.insert(workerPtr->_event);
 		workerPtr = FindWorkerWithLowPriority();
 	}
+
+    //TODO make func for this
+    workerPtr = nullptr;
+    workerPtr = FindLowestPriorityWorker(true);
+    while(ReqDeqPriority1[FindHighestReq(ReqDeqPriority1)].ReqPriority>workerPtr->ReqPriority){
+        ReqDeqPriority1.push_back(workerPtr->_event.req);
+        TimeHandle.erase(workerPtr->_event);
+        workerPtr->TimeInWork -= workerPtr->wf - CurrentTime;
+
+        Request ReqFromDeq=ReqDeqPriority1[FindHighestReq(ReqDeqPriority1)];
+        ReqFromDeq.WorkBeginTime = CurrentTime;
+        ReqDeqPriority1.erase(ReqDeqPriority1.begin()+FindHighestReq(ReqDeqPriority1));
+
+        workerPtr->wf = ReqFromDeq.WorkTime + CurrentTime;
+        workerPtr->ReqState = 1;
+        workerPtr->ReqPriority=ReqFromDeq.ReqPriority;
+        workerPtr->TimeInWork += ReqFromDeq.WorkTime;
+
+        workerPtr->_event = Event(SomeRequestTimeEnd, workerPtr->wf, workerPtr, ReqFromDeq);
+        TimeHandle.insert(workerPtr->_event);
+        workerPtr = FindLowestPriorityWorker(true);
+    }
+
 	//check free workers for low priority requests
 	workerPtr = nullptr;
 	workerPtr = FindFreeWorker();
 	while (!ReqDeqPriority2.empty() && workerPtr)
 	{
-		UseFreeWorkerWithReqFromDeq(workerPtr, &ReqDeqPriority2,2);
+        //UseFreeWorkerWithReqFromDeq(workerPtr, &ReqDeqPriority2,2);
+        UseFreeWorkerWithReqFromDeq(workerPtr,&ReqDeqPriority2,false);
 		workerPtr = FindFreeWorker();
 	}
 
@@ -311,23 +634,16 @@ Event TimeManager::MoveTime()
 
 	TimeHandle.erase(TimeHandle.begin());
 
-	if(TimeEquivalently(w1.wf,CurrentTime))
-	{
-		w1.wf = -1.0;
-	}
-	else if (TimeEquivalently(w2.wf, CurrentTime))
-	{
-		w2.wf = -1.0;
-	}
+
 	return TempEvent;
 }
 
 Worker* TimeManager::FindWorkerByTime(double Time)
 {
-	if (TimeEquivalently(w1.wf, Time))
-		return &w1;
-	if (TimeEquivalently(w2.wf, Time))
-		return &w2;
+    //if (TimeEquivalently(w1.wf, Time))
+        //return &w1;
+    //if (TimeEquivalently(w2.wf, Time))
+        //return &w2;
 
 	return nullptr;
 }
@@ -358,22 +674,22 @@ double TimeManager::GetAverageWaitingTimeForAnApplicationInQueueTq() const
 
 double TimeManager::GetAverageTimeSpentByTheApplicationInTheSystemTs() const
 {
-    //TODO возможно не правильно
-    //если что, заменить : return GetAverageWaitingTimeForAnApplicationInQueueTq() + AverageServiceTime;
+    //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ : return GetAverageWaitingTimeForAnApplicationInQueueTq() + AverageServiceTime;
     return GetAverageWaitingTimeForAnApplicationInQueueTq() + 1.0/AverageServiceTime;
 }
 
 double TimeManager::GetTimeAverageNumberOfRequestsInTheQueueNq() const
 {
-    //TODO возможно не правильно
-    //если что, заменить : return GetAverageWaitingTimeForAnApplicationInQueueTq() / AverageServiceTime;
+    //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ : return GetAverageWaitingTimeForAnApplicationInQueueTq() / AverageServiceTime;
     return GetAverageWaitingTimeForAnApplicationInQueueTq() * AverageReqAdmissionTime;
 }
 
 double TimeManager::GetTimeAverageNumberOfRequirementsInTheSystemNs() const
 {
-    //TODO возможно не правильно
-    //если что, заменить : return GetAverageWaitingTimeForAnApplicationInQueueTs() / AverageServiceTime;
+    //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ : return GetAverageWaitingTimeForAnApplicationInQueueTs() / AverageServiceTime;
     return GetAverageTimeSpentByTheApplicationInTheSystemTs() * AverageReqAdmissionTime;
 }
 
@@ -389,19 +705,42 @@ double TimeManager::GetAbsoluteSystemCapacityCr() const
 
 double TimeManager::Exponential_rasp(double med) const
 {
-	const auto y = double(rand()) / RAND_MAX; //равномерно распределенная случайная величина [0,1]
+	const auto y = double(rand()) / RAND_MAX; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ [0,1]
 	return -1 / med * log(y);
 }
 
 
-int TimeManager::GetPriorityForRequest()
+bool TimeManager::GetTypeForRequest()
 {
 	double GeneratedValue = PriorityGenerator.next();
 
 	GeneratedValue = GeneratedValue / RAND_MAX;
 	if (GeneratedValue > 0.8)
-		return 1;
-	return 2;
+        return true;
+    return false;
+}
+
+int TimeManager::GetPriorityForRequest(bool isRequestAbsolute){
+
+    double GeneratedValue = PriorityGenerator.next();
+
+    GeneratedValue = GeneratedValue / RAND_MAX;
+    if(isRequestAbsolute){
+        FindPriorityInMap(HighPriorityArr,GeneratedValue);
+    }
+    else{
+        FindPriorityInMap(LowPriorityArr,GeneratedValue);
+    }
+}
+
+int TimeManager::FindPriorityInMap(QMap<int, QPair<double, double> > &PriorityMap, double Priority)
+{
+    for(auto i=PriorityMap.begin(); i!=PriorityMap.end();++i){
+        if(i.value().first<=Priority && i.value().second>=Priority){
+            return i.key();
+        }
+    }
+    return -1;
 }
 
 int TimeManager::GetReqCountInDeq() const
@@ -414,7 +753,7 @@ int TimeManager::GetReqCountInSystem() const
     int TempCount=GetReqCountInDeq();
 
     for(int i=0;i<CountOfWorkers;i++){
-        if(GroupOfWorkers[i].ReqPriority!=-1)
+        if(GroupOfWorkers[i].ReqState!=-1)
             TempCount++;
     }
 
@@ -433,26 +772,6 @@ int TimeManager::GetReqCountInSystem() const
     return TempCount;
 }
 
-void TimeManager::SetPriorityProbability()
-{
-    for(int i=1;i<CountOfPriority;++i){
-        PriorityArr[i].priority+=PriorityArr[i-1].priority;
-    }
-}
-
-std::pair<double, double> TimeManager::GetPriorityProbability(int Priority)
-{
-    Priority--;
-    if(Priority==0){
-        return std::pair<double,double>(0.0,PriorityArr[0].priority);
-    }
-    else if(Priority>0 && Priority<CountOfPriority){
-        return std::pair<double,double>(PriorityArr[Priority-1].priority,PriorityArr[Priority].priority);
-    }
-    else{
-        throw std::invalid_argument( "Priority out of bounds" );
-    }
-}
 
 void TimeManager::SetGraphicsDataExpAdmission()
 {
