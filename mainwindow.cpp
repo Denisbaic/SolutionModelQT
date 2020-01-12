@@ -7,6 +7,7 @@
 #include <QLCDNumber>
 #include "qcustomplot.h"
 #include <algorithm>
+#include <QList>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -35,28 +36,52 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     ui->THighPriority->setModel(model);
-
-/*
-    using namespace InsertRemove;
-    VariantMatrix data;
-    ::demoMatrix(data);
-
-    Model model(data);
-
-    ui->TTest->setModel(&model);
-
-    Panel* panel=new Panel(EverythingAllowed,EverythingAllowed);
-    panel->setPolicy(Qt::Horizontal, (PolicyFlags) RemoveAllowed | AppendAllowed );
-    panel->attach(ui->TTest);
-
-    ui->TTest->show();
-    ::resize(ui->TTest,600,400);
-    */
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::GetPriorityFromTables(TimeManager *time_manager)
+{
+    time_manager->LowPriorityArr.empty();
+    time_manager->HighPriorityArr.empty();
+
+    QVector<int> keys;
+    QList<double> priority={0};
+
+
+    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
+      keys.append(ui->TLowPriority->model()->index(i,0).data().toInt());
+    }
+    priority.append(ui->TLowPriority->model()->index(0,1).data().toDouble());
+    for (int i=1;i< ui->TLowPriority->model()->rowCount();++i) {
+      priority.append(ui->TLowPriority->model()->index(i,1).data().toDouble());
+    }
+    for (int i=1;i<= ui->TLowPriority->model()->rowCount();++i) {
+      priority[i]+=priority[i-1];
+    }
+    for (int i=0;i<keys.size();++i) {
+        time_manager->LowPriorityArr.insert(keys[i],QPair<double,double>(priority[i],priority[i+1]));
+    }
+    keys={};
+    priority={0};
+
+    for (int i=0;i< ui->THighPriority->model()->rowCount();++i) {
+      keys.append(ui->THighPriority->model()->index(i,0).data().toInt());
+    }
+    priority.append(ui->THighPriority->model()->index(0,1).data().toDouble());
+    for (int i=1;i< ui->THighPriority->model()->rowCount();++i) {
+      priority.append(ui->THighPriority->model()->index(i,1).data().toDouble());
+    }
+    for (int i=1;i<= ui->THighPriority->model()->rowCount();++i) {
+      priority[i]+=priority[i-1];
+    }
+    for (int i=0;i<keys.size();++i) {
+        time_manager->HighPriorityArr.insert(keys[i],QPair<double,double>(priority[i],priority[i+1]));
+    }
+
 }
 
 void MainWindow::ShowWorkerInfoTable(TimeManager *time_manager)
@@ -410,18 +435,24 @@ void MainWindow::on_pushButton_clicked()
 
     double sum=0.0;
     for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
-       sum+= ui->TLowPriority->model()->index(i,0).data().toDouble();
+       sum+= ui->TLowPriority->model()->index(i,1).data().toDouble();
     }
-    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
-       sum+= ui->THighPriority->model()->index(i,0).data().toDouble();
-    }
-    if(sum>=1.0 && !TimeManager::TimeEquivalently(sum,1.0)){
+    if(!TimeManager::TimeEquivalently(sum,1.0)){
         return;
     }
+    sum=0;
+    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
+       sum+= ui->THighPriority->model()->index(i,1).data().toDouble();
+    }
+    if(!TimeManager::TimeEquivalently(sum,1.0)){
+        return;
+    }
+
     TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
-    time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
-    time_manager.HighPriorityArr={{2,{0.0,0.1}},{3,{0.1,0.2}},{4,{0.2,0.8}},{5,{0.8,1.0}}};
+    GetPriorityFromTables(&time_manager);
+    //time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
+    //time_manager.HighPriorityArr={{2,{0.0,0.1}},{3,{0.1,0.2}},{4,{0.2,0.8}},{5,{0.8,1.0}}};
     time_manager.TypeRequestBound=ui->LCDTypeRequestBound->value();
     //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
     time_manager.AddNextReqBeforeSomeTime();

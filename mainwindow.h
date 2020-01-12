@@ -17,7 +17,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-     void ShowWorkerInfoTable(class TimeManager* time_manager);
+     void GetPriorityFromTables(class TimeManager* time_manager);
+
+     void ShowWorkerInfoTable(TimeManager* time_manager);
      void ShowProcessedReqTable();
      void ShowFailedReqTable(TimeManager* time_manager);
 
