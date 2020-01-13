@@ -56,6 +56,7 @@ public:
 
     QVector<double> Time;
 
+    QVector<double>* ExpTime;
     void SetGraphicsDataExpAdmission();
     void SetGraphicsDataExpService();
 

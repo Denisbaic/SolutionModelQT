@@ -356,13 +356,13 @@ void MainWindow::DrawGraphicExpAdmission(TimeManager *time_manager)
      ui->GraphicExpAdmission->addGraph();
      ui->GraphicExpAdmission->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-     ui->GraphicExpAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspAdmission);
+     ui->GraphicExpAdmission->graph(0)->setData(*time_manager->ExpTime,time_manager->ExpRaspAdmission);
 
      ui->GraphicExpAdmission->xAxis->setLabel("Время");
      ui->GraphicExpAdmission->yAxis->setLabel("Значение функции распределения");
 
      ui->GraphicExpAdmission->xAxis->setRange(0, *time_manager->Time.rbegin());
-     ui->GraphicExpAdmission->yAxis->setRange(-1, *max+1);
+     ui->GraphicExpAdmission->yAxis->setRange(0, *max);
      ui->GraphicExpAdmission->replot();
 }
 
@@ -376,13 +376,13 @@ void MainWindow::DrawGraphicExpService(TimeManager *time_manager)
     ui->GraphicExpService->addGraph();
     ui->GraphicExpService->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-    ui->GraphicExpService->graph(0)->setData(time_manager->Time,time_manager->ExpRaspService);
+    ui->GraphicExpService->graph(0)->setData(*time_manager->ExpTime,time_manager->ExpRaspService);
 
     ui->GraphicExpService->xAxis->setLabel("Время");
     ui->GraphicExpService->yAxis->setLabel("Значение функции распределения");
 
     ui->GraphicExpService->xAxis->setRange(0, *time_manager->Time.rbegin());
-    ui->GraphicExpService->yAxis->setRange(-1, *max+1);
+    ui->GraphicExpService->yAxis->setRange(0, *max);
     ui->GraphicExpService->replot();
 }
 
@@ -396,7 +396,7 @@ void MainWindow::DrawGraphicExpDensityService(TimeManager *time_manager)
     ui->GraphicExpDensityService->addGraph();
     ui->GraphicExpDensityService->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-    ui->GraphicExpDensityService->graph(0)->setData(time_manager->Time,time_manager->ExpRaspDensityService);
+    ui->GraphicExpDensityService->graph(0)->setData(*time_manager->ExpTime,time_manager->ExpRaspDensityService);
 
     ui->GraphicExpDensityService->xAxis->setLabel("Время");
     ui->GraphicExpDensityService->yAxis->setLabel("Значение плотности функции распределения");
@@ -416,7 +416,7 @@ void MainWindow::DrawGraphicExpDensityAdmission(TimeManager *time_manager)
     ui->GraphicExpDensityAdmission->addGraph();
     ui->GraphicExpDensityAdmission->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-    ui->GraphicExpDensityAdmission->graph(0)->setData(time_manager->Time,time_manager->ExpRaspAdmission);
+    ui->GraphicExpDensityAdmission->graph(0)->setData(*time_manager->ExpTime,time_manager->ExpRaspDensityAdmission);
 
     ui->GraphicExpDensityAdmission->xAxis->setLabel("Время");
     ui->GraphicExpDensityAdmission->yAxis->setLabel("Значение плотности функции распределения");
@@ -477,6 +477,8 @@ void MainWindow::on_pushButton_clicked()
                 time_manager.CheckReqContainer();
             }
         }
+
+
         time_manager.SetGraphicsDataExpAdmission();
         time_manager.SetGraphicsDataExpService();
         time_manager.SetGraphicsDataExpDensityAdmission();
@@ -492,13 +494,13 @@ void MainWindow::on_pushButton_clicked()
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
         ui->TBCr->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCr()));
 
-        DrawRequestBars(&time_manager);
+        //DrawRequestBars(&time_manager);
 
-        DrawGraphicReqInDeqPerFix(&time_manager);
-        DrawGraphicReqInSystemPerFix(&time_manager);
-        DrawGraphicPPerFix(&time_manager);
-        DrawGraphicNq(&time_manager);
-        DrawGraphicNs(&time_manager);
+        //DrawGraphicReqInDeqPerFix(&time_manager);
+        //DrawGraphicReqInSystemPerFix(&time_manager);
+        //DrawGraphicPPerFix(&time_manager);
+        //DrawGraphicNq(&time_manager);
+        //DrawGraphicNs(&time_manager);
 
         DrawGraphicExpAdmission(&time_manager);
         DrawGraphicExpService(&time_manager);
@@ -554,4 +556,14 @@ void MainWindow::on_ScrollBarTypeRequestBound_valueChanged(int value)
 void MainWindow::on_ScrollBarTypeRequestBound_rangeChanged(int min, int max)
 {
 
+}
+
+void MainWindow::on_TLowPriority_doubleClicked(const QModelIndex &index)
+{
+    ui->TLowPriority->model()->removeRow(index.row());
+}
+
+void MainWindow::on_THighPriority_doubleClicked(const QModelIndex &index)
+{
+    ui->THighPriority->model()->removeRow(index.row());
 }

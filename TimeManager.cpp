@@ -14,6 +14,10 @@ TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceT
 	srand(time(NULL));
     CountOfWorkers=WorkersCount;
     GroupOfWorkers=new Worker[WorkersCount];
+
+    ExpTime= new QVector<double>(1000);
+    double x = 0;
+    std::generate(ExpTime->begin(), ExpTime->end(), [&]{ return x+=0.01; });
 }
 
 TimeManager::~TimeManager()
@@ -274,7 +278,7 @@ void TimeManager::RequestInWork()
                             TryToPushReqWithHighPriority(requestPriority);
                         }
                         else{
-                            ReqDeqPriority1.push_back(Request(0.0,requestPriority, true,CurrentTime,CurrentTime,CurrentTime));
+                            ReqDeqPriority1.push_back(Request(Exponential_rasp(AverageServiceTime),requestPriority, true,CurrentTime,CurrentTime,CurrentTime));
                         }
                     }
                 }
@@ -494,7 +498,7 @@ double TimeManager::GetAbsoluteSystemCapacityCa() const
 
 double TimeManager::GetAbsoluteSystemCapacityCr() const
 {
-    return Worker::ProcessedReqQueue.size()/(Worker::ProcessedReqQueue.size()+ReqFailed.size());
+    return double(Worker::ProcessedReqQueue.size())/(Worker::ProcessedReqQueue.size()+ReqFailed.size());
 }
 
 double TimeManager::Exponential_rasp(double med) const
@@ -557,26 +561,26 @@ int TimeManager::GetReqCountInSystem() const
 
 void TimeManager::SetGraphicsDataExpAdmission()
 {
-    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+    for(int i=0; i<ExpTime->size();++i)
         ExpRaspAdmission.push_back(1-std::pow(2.71828,-AverageReqAdmissionTime*i));
 }
 
 void TimeManager::SetGraphicsDataExpService()
 {
-    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
-        ExpRaspService.push_back(1-std::pow(2.71828,-AverageServiceTime*i));
+    for(int i=0; i<ExpTime->size();++i)
+       ExpRaspService.push_back(1-std::pow(2.71828,-AverageServiceTime*i));
 }
 
 void TimeManager::SetGraphicsDataExpDensityAdmission()
 {
-    for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
+    for(int i=0; i<ExpTime->size();++i)
         ExpRaspDensityAdmission.push_back(AverageReqAdmissionTime*std::pow(2.71828,-AverageReqAdmissionTime*i));
 }
 
 void TimeManager::SetGraphicsDataExpDensityService()
 {
-        for(double i=0.0; i<=Time.size()*0.01;i+=0.01)
-            ExpRaspDensityService.push_back(AverageServiceTime*std::pow(2.71828,-AverageServiceTime*i));
+    for(int i=0; i<ExpTime->size();++i)
+        ExpRaspDensityService.push_back(AverageServiceTime*std::pow(2.71828,-AverageServiceTime*i));
 }
 
 bool TimeManager::TimeEquivalently(double l, double r)

@@ -47,6 +47,10 @@ private slots:
 
     void on_ScrollBarTypeRequestBound_valueChanged(int value);
 
+    void on_TLowPriority_doubleClicked(const QModelIndex &index);
+
+    void on_THighPriority_doubleClicked(const QModelIndex &index);
+
 private:
 
     void AddRowToTableFromDeq(class QStandardItemModel* model, std::deque<Request>* deq);
