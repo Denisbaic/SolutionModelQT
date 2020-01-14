@@ -446,7 +446,7 @@ void MainWindow::on_pushButton_clicked()
     }
 
 
-    TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+    TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime, true);
     time_manager.Limit=ReqLimit;
     GetPriorityFromTables(&time_manager);
     //time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
@@ -588,9 +588,12 @@ void MainWindow::on_pushButton_2_clicked()
         ReqLimit=ui->TBReqLimit->toPlainText().toDouble();
 
     QVector<double> P,Ns,Nq, Tq,Ts,Ca,Cr;
-    int N=47;
+    int N=10;
+
+    srand(time(NULL));
     for (int i=1;i<=N;++i) {
-        TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+        TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime,false);
+        //srand(next.next());
         time_manager.Limit=ReqLimit;
         GetPriorityFromTables(&time_manager);
         //time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};

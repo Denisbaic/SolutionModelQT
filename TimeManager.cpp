@@ -4,14 +4,17 @@
 #include <time.h>
 #include <cassert>
 #include <QMessageBox>
-TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceTime, double _AverageReqAdmissionTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
+TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceTime, double _AverageReqAdmissionTime, bool SetTime) :  PriorityGenerator(Generator(RAND_MAX, 0)),
                                                                                                 AverageServiceTime(_AverageServiceTime),
                                                                                                 AverageReqAdmissionTime(_AverageReqAdmissionTime),
                                                                                                 ReqAdded(0),
                                                                                                 ReqNeed(req_need),
                                                                                                 CurrentTime(0.f)
 {
-	srand(time(NULL));
+    if(SetTime){
+         srand(time(NULL));
+    }
+
     CountOfWorkers=WorkersCount;
     GroupOfWorkers=new Worker[WorkersCount];
 
