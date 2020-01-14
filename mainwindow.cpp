@@ -638,7 +638,5 @@ void MainWindow::on_pushButton_2_clicked()
         xlsx.write("G"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCa());
         xlsx.write("H"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCr());
     }
-
-
     xlsx.saveAs("Test.xlsx");
 }
