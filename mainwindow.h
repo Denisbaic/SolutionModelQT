@@ -51,8 +51,10 @@ private slots:
 
     void on_THighPriority_doubleClicked(const QModelIndex &index);
 
-private:
+    void on_pushButton_2_clicked();
 
+private:
+    double AvgVector(QVector<double>& v);
     void AddRowToTableFromDeq(class QStandardItemModel* model, std::deque<Request>* deq);
     Ui::MainWindow *ui;
 };

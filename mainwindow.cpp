@@ -8,6 +8,8 @@
 #include "qcustomplot.h"
 #include <algorithm>
 #include <QList>
+#include <QVector>
+#include "xlsxdocument.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -443,6 +445,7 @@ void MainWindow::on_pushButton_clicked()
         return;
     }
 
+
     TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
     time_manager.Limit=ReqLimit;
     GetPriorityFromTables(&time_manager);
@@ -560,4 +563,79 @@ void MainWindow::on_TLowPriority_doubleClicked(const QModelIndex &index)
 void MainWindow::on_THighPriority_doubleClicked(const QModelIndex &index)
 {
     ui->THighPriority->model()->removeRow(index.row());
+}
+
+double MainWindow::AvgVector(QVector<double> &v)
+{
+    double sum = 0;
+
+    for ( double x : v ) sum += x;
+
+    return v.empty() ? 0 : sum / v.size();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QXlsx::Document xlsx;
+    xlsx.write("A1", "№"); xlsx.write("B1", "P");
+    xlsx.write("C1", "Ns"); xlsx.write("D1","Nq");
+    xlsx.write("E1", "Tq");xlsx.write("F1", "Ts");
+    xlsx.write("G1", "Ca"); xlsx.write("H1", "Cr");
+
+    int ReqNeed=ui->TBReqNeed->toPlainText().toInt(), WorkerCount=ui->TBWorkerCount->toPlainText().toInt();
+    double AverageAdmissionTime=ui->TBAdmissionTime->toPlainText().toDouble(),
+        AverageServiceTime=ui->TBAverageServiceTime->toPlainText().toDouble(),
+        ReqLimit=ui->TBReqLimit->toPlainText().toDouble();
+
+    QVector<double> P,Ns,Nq, Tq,Ts,Ca,Cr;
+    int N=47;
+    for (int i=1;i<=N;++i) {
+        TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime);
+        time_manager.Limit=ReqLimit;
+        GetPriorityFromTables(&time_manager);
+        //time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
+        //time_manager.HighPriorityArr={{2,{0.0,0.1}},{3,{0.1,0.2}},{4,{0.2,0.8}},{5,{0.8,1.0}}};
+        time_manager.TypeRequestBound=ui->LCDTypeRequestBound->value();
+        //AverageServiceTime =0.04 AverageReqAdmissionTime=0.1
+        time_manager.AddNextReqBeforeSomeTime();
+        while (!time_manager.TimeHandle.empty())
+        {
+            Event event_=time_manager.MoveTime();
+            if(event_.event_destination==EventDestination::NewReqest)
+            {
+                if(time_manager.ReqNeed != time_manager.ReqAdded)
+                    time_manager.AddNextReqBeforeSomeTime();
+                time_manager.RequestInWork();
+            }
+            else if (event_.event_destination==EventDestination::SomeRequestTimeEnd)
+            {
+                event_.workerPtr->ReqAcceptedCount++;
+                event_.req.ExitTime = time_manager.CurrentTime;
+                event_.workerPtr->ReqState = -1;
+                event_.workerPtr->ReqPriority = -1;
+
+                Worker::ProcessedReqQueue.push_back(event_.req);
+                time_manager.CheckReqContainer();
+            }
+        }
+        P.push_back(time_manager.GetSystemUtilizationP());
+        Ns.push_back(time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs());
+        Nq.push_back(time_manager.GetTimeAverageNumberOfRequestsInTheQueueNq());
+        Tq.push_back(time_manager.GetAverageWaitingTimeForAnApplicationInQueueTq());
+        Ts.push_back(time_manager.GetAverageTimeSpentByTheApplicationInTheSystemTs());
+        Ca.push_back(time_manager.GetAbsoluteSystemCapacityCa());
+        Cr.push_back(time_manager.GetAbsoluteSystemCapacityCr());
+
+        xlsx.write("A"+QString::number(i+1),i);
+        xlsx.write("B"+QString::number(i+1), time_manager.GetSystemUtilizationP());
+        xlsx.write("C"+QString::number(i+1), time_manager.GetTimeAverageNumberOfRequirementsInTheSystemNs());
+        xlsx.write("D"+QString::number(i+1), time_manager.GetTimeAverageNumberOfRequestsInTheQueueNq());
+        xlsx.write("E"+QString::number(i+1), time_manager.GetAverageWaitingTimeForAnApplicationInQueueTq());
+        xlsx.write("F"+QString::number(i+1), time_manager.GetAverageTimeSpentByTheApplicationInTheSystemTs());
+        xlsx.write("G"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCa());
+        xlsx.write("H"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCr());
+    }
+
+
+    xlsx.saveAs("Test.xlsx");
 }

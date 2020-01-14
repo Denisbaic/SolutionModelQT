@@ -49,3 +49,5 @@ DISTFILES += \
     ShemeSMO.png \
     Блок-схема СМО.png \
     Блок-схема СМО.png
+
+ include(src/xlsx/qtxlsx.pri)

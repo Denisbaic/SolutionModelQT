@@ -435,15 +435,15 @@ Event TimeManager::MoveTime()
 	const auto TempEvent = (*TimeHandle.begin());
 	CurrentTime = TempEvent.time;	
 
-	std::cout << CurrentTime<<" ";
-	std::cout << TempEvent.time << " ";
+    //std::cout << CurrentTime<<" ";
+    //std::cout << TempEvent.time << " ";
 	
-	switch (TempEvent.event_destination)
-	{
-	case NewReqest: std::cout << " New request" << std::endl; break;
-	case SomeRequestTimeEnd:std::cout << " SomeRequestTimeEnd" << std::endl; break;
-	default: ;
-	}
+//	switch (TempEvent.event_destination)
+//	{
+//	case NewReqest: std::cout << " New request" << std::endl; break;
+//	case SomeRequestTimeEnd:std::cout << " SomeRequestTimeEnd" << std::endl; break;
+//	default: ;
+//	}
 
 	TimeHandle.erase(TimeHandle.begin());
 
