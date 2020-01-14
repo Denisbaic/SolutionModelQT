@@ -441,7 +441,7 @@ void MainWindow::on_pushButton_clicked()
         return;
     }
     sum=0;
-    for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
+    for (int i=0;i< ui->THighPriority->model()->rowCount();++i) {
        sum+= ui->THighPriority->model()->index(i,1).data().toDouble();
     }
     if(!TimeManager::TimeEquivalently(sum,1.0)){
@@ -494,13 +494,13 @@ void MainWindow::on_pushButton_clicked()
         ui->TBCa->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCa()));
         ui->TBCr->setText(QString::number(time_manager.GetAbsoluteSystemCapacityCr()));
 
-        //DrawRequestBars(&time_manager);
+        DrawRequestBars(&time_manager);
 
-        //DrawGraphicReqInDeqPerFix(&time_manager);
-        //DrawGraphicReqInSystemPerFix(&time_manager);
-        //DrawGraphicPPerFix(&time_manager);
-        //DrawGraphicNq(&time_manager);
-        //DrawGraphicNs(&time_manager);
+        DrawGraphicReqInDeqPerFix(&time_manager);
+        DrawGraphicReqInSystemPerFix(&time_manager);
+        DrawGraphicPPerFix(&time_manager);
+        DrawGraphicNq(&time_manager);
+        DrawGraphicNs(&time_manager);
 
         DrawGraphicExpAdmission(&time_manager);
         DrawGraphicExpService(&time_manager);

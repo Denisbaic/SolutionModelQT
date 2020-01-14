@@ -8,6 +8,7 @@ public:
 	Request(double work_time, double arrival_time, double exit_time);
 	Request(double work_time, double arrival_time);
 	Request();
+    bool operator<(const Request& req);
     int    ReqPriority;
     bool   isReqAbsolute;
 	double WorkTime;

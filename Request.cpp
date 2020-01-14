@@ -40,3 +40,8 @@ Request::Request() : WorkTime(0),
                      ExitTime(0)
 {
 }
+
+bool Request::operator<(const Request &req)
+{
+    return this->ReqPriority<req.ReqPriority;
+}

@@ -23,6 +23,7 @@ TimeManager::TimeManager(int req_need,int WorkersCount,  double _AverageServiceT
 TimeManager::~TimeManager()
 {
     delete[] GroupOfWorkers;    
+    delete ExpTime;
 }
 
 void TimeManager::AddNextReqBeforeSomeTime()
@@ -145,8 +146,8 @@ void TimeManager::UseBusyWorkerWithNewReq(Worker *w, int ReqPriority, bool isReq
 
 
 void TimeManager::UseFreeWorkerWithReqFromDeq(Worker *w, std::deque<Request> *ReqDeq, bool isReqAbsolute)
-{
-    Request ReqFromDeq;
+{    
+/*
     if(!isReqAbsolute){
         ReqFromDeq = *ReqDeq->begin();
         ReqFromDeq.WorkBeginTime = CurrentTime;
@@ -157,6 +158,10 @@ void TimeManager::UseFreeWorkerWithReqFromDeq(Worker *w, std::deque<Request> *Re
         ReqFromDeq=*(ReqDeq->begin()+TempIndex);
         ReqDeq->erase(ReqDeq->begin()+TempIndex);
     }
+*/
+    int TempIndex=FindHighestReq(*ReqDeq);
+    Request ReqFromDeq=*(ReqDeq->begin()+TempIndex);
+    ReqDeq->erase(ReqDeq->begin()+TempIndex);
 
     w->wf = ReqFromDeq.WorkTime + CurrentTime;
     w->ReqState=isReqAbsolute ? 1 : 2;

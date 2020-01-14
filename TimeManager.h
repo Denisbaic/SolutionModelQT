@@ -7,13 +7,15 @@
 #include <QVector>
 #include <QMap>
 #include <QPair>
-
+#include <QSet>
 class TimeManager
 {
 	Generator PriorityGenerator;
 
-	std::deque<Request> ReqDeqPriority1;
-	std::deque<Request> ReqDeqPriority2;
+    std::deque<Request> ReqDeqPriority1;
+    std::deque<Request> ReqDeqPriority2;
+    //QSet<Request> ReqDeqPriority1;
+    //QSet<Request> ReqDeqPriority2;
 
 	Worker* FindFreeWorker();
 	Worker* FindWorkerWithLowPriority();
