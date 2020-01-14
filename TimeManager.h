@@ -30,7 +30,7 @@ class TimeManager
     int     FindHighestReq(std::deque<Request>& ReqDeq);
     Worker* FindLowestPriorityWorker(bool isReqAbsolute);
 public:
-    TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime);
+    TimeManager(int req_need,int WorkersCount, double _AverageServiceTime, double _AverageReqAdmissionTime, bool SetTime);
     ~TimeManager();
     double AverageServiceTime;
 	double AverageReqAdmissionTime;
