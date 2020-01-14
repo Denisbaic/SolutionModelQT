@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     QPixmap pix("E:/QTProjects/SolutionModelAlexey/ShemeSMO.png");
-     QPixmap pix2("E:/QTProjects/SolutionModelAlexey/Block-sheme SMO.png");
+    QPixmap pix2("E:/QTProjects/SolutionModelAlexey/Block-sheme SMO.png");
     ui->label_18->setPixmap(pix);
     ui->label_19->setPixmap(pix2);
 
@@ -30,10 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new QStandardItemModel;
 
-
     model->setHorizontalHeaderLabels(horizontalHeader);
-
-
 
     ui->THighPriority->setModel(model);
 }
@@ -50,7 +47,6 @@ void MainWindow::GetPriorityFromTables(TimeManager *time_manager)
 
     QVector<int> keys;
     QList<double> priority={0};
-
 
     for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
       keys.append(ui->TLowPriority->model()->index(i,0).data().toInt());
@@ -81,7 +77,6 @@ void MainWindow::GetPriorityFromTables(TimeManager *time_manager)
     for (int i=0;i<keys.size();++i) {
         time_manager->HighPriorityArr.insert(keys[i],QPair<double,double>(priority[i],priority[i+1]));
     }
-
 }
 
 void MainWindow::ShowWorkerInfoTable(TimeManager *time_manager)
@@ -477,7 +472,6 @@ void MainWindow::on_pushButton_clicked()
                 time_manager.CheckReqContainer();
             }
         }
-
 
         time_manager.SetGraphicsDataExpAdmission();
         time_manager.SetGraphicsDataExpService();
