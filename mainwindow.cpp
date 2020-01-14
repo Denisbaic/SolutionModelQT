@@ -437,14 +437,14 @@ void MainWindow::on_pushButton_clicked()
     for (int i=0;i< ui->TLowPriority->model()->rowCount();++i) {
        sum+= ui->TLowPriority->model()->index(i,1).data().toDouble();
     }
-    if(!TimeManager::TimeEquivalently(sum,1.0)){
+    if(!ui->TLowPriority->model()->rowCount()==0 && !TimeManager::TimeEquivalently(sum,1.0)){
         return;
     }
     sum=0;
     for (int i=0;i< ui->THighPriority->model()->rowCount();++i) {
        sum+= ui->THighPriority->model()->index(i,1).data().toDouble();
     }
-    if(!TimeManager::TimeEquivalently(sum,1.0)){
+    if(!ui->THighPriority->model()->rowCount()==0 && !TimeManager::TimeEquivalently(sum,1.0)){
         return;
     }
 
