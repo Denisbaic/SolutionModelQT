@@ -97,6 +97,7 @@ public:
     //относительная пропускная способность системы
     double GetAbsoluteSystemCapacityCr() const;
 
+    double GetI() const;
 	//генератор случайных чисел
 	double Exponential_rasp(double med) const;
     //true-высокий приоритет
@@ -107,6 +108,7 @@ public:
 
 	int	   GetReqCountInDeq() const;
     int    GetReqCountInSystem() const;
+
 
     static bool TimeEquivalently(double l, double r);
 };

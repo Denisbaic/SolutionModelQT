@@ -509,6 +509,11 @@ double TimeManager::GetAbsoluteSystemCapacityCr() const
     return double(Worker::ProcessedReqQueue.size())/(Worker::ProcessedReqQueue.size()+ReqFailed.size());
 }
 
+double TimeManager::GetI() const
+{//TODO доделать
+    return -1.0;
+}
+
 double TimeManager::Exponential_rasp(double med) const
 {
 	const auto y = double(rand()) / RAND_MAX; //���������� �������������� ��������� �������� [0,1]

@@ -590,10 +590,11 @@ void MainWindow::on_pushButton_2_clicked()
     QVector<double> P,Ns,Nq, Tq,Ts,Ca,Cr;
     int N=10;
 
-    srand(time(NULL));
+    Generator next(RAND_MAX*4,0);
+    //srand(time(NULL));
     for (int i=1;i<=N;++i) {
         TimeManager time_manager(ReqNeed, WorkerCount, 1.0/AverageServiceTime, 1.0/AverageAdmissionTime,false);
-        //srand(next.next());
+        srand(next.next());
         time_manager.Limit=ReqLimit;
         GetPriorityFromTables(&time_manager);
         //time_manager.LowPriorityArr={{1,{0.0,0.2}}, {2,{0.2,1.0}}};
@@ -638,5 +639,6 @@ void MainWindow::on_pushButton_2_clicked()
         xlsx.write("G"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCa());
         xlsx.write("H"+QString::number(i+1), time_manager.GetAbsoluteSystemCapacityCr());
     }
+
     xlsx.saveAs("Test.xlsx");
 }
